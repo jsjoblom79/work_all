@@ -18,7 +18,9 @@ async function navigate(location){
         case "main":
             break;
         case "vendors":
-            main.appendElement(await displayVendorList(), await displayAddVendor());
+            const vendList = await displayVendorList();
+            const vendAdd = await displayAddVendor();
+            main.appendElements(vendList, vendAdd);
             break;
         case "systems":
             break;

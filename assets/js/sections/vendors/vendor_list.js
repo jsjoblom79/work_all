@@ -2,6 +2,9 @@
 import displaySelectInput from "/assets/js/components/selectInput.js";
 import displayButton from "/assets/js/components/button.js";
 import displayWindow from "/assets/js/components/displayWindow.js";
+import displayField from "/assets/js/components/inputField.js";
+import displayTwoField from "/assets/js/components/displayTwoField.js";
+import displayThreeFields from "/assets/js/components/displayThreeFields.js";
 
 export default async function displayVendorList(){
     let vendorList = await window.pywebview.api.vendor.get_all_vendors();
@@ -23,8 +26,8 @@ export default async function displayVendorList(){
 export async function displayAddVendor(){
     const addWindow = await displayWindow('Add Vendor', true);
     const nameField = await displayField('Name', 'vendor-name', 'text', 'gs-input');
-    const add1Field = await displayField('Add 1', 'vendor-add1', 'text', 'gs-input');
-    const add2Field = await displayField('Add 2', 'vendor-add2', 'text', 'gs-input');
+    const add1Field = await displayField('Add 1', 'vendor-address1', 'text', 'gs-input');
+    const add2Field = await displayField('Add 2', 'vendor-address2', 'text', 'gs-input');
     const cityField = await displayField('city', 'vendor-city', 'text', 'gs-input');
     const stateField = await displayField('state', 'vendor-state', 'text', 'gs-input');
     const zipField = await displayField('Zip', 'vendor-zip', 'text', 'gs-input');
@@ -34,20 +37,15 @@ export async function displayAddVendor(){
     const line2 = await displayTwoField([add1Field, add2Field]);
     const line3 = await displayThreeFields([cityField, stateField, zipField]);
     const line4 = await displayTwoField([countryField, websiteField]);
-    const line5 = displayButton('Add', ['gs-btn','gs-btn--primary'], () => {
-        if(addVendor(nameField.input.value, add1Field.input.value, add2Field.input.value,
-            cityField.input.value, stateField.input.value, zipField.input.value, countryField.input.value,
-            websiteField.input.value))
-        {
-            nameField.input.value = '';
-            add1Field.input.value = '';
-            add2Field.input.value = '';
-            cityField.input.value = '';
-            stateField.input.value = '';
-            zipField.input.value = '';
-            countryField.input.value = '';
-            websiteField.input.value = '';
-        }
+    const vendorFields = [nameField, add1Field, add2Field, cityField, stateField, zipField, countryField, websiteField ];
+    const line5 = displayButton('Add', ['gs-btn','gs-btn--primary'], async() => {
+        const newVend = {}
+        vendorFields.forEach(field =>{
+           const key = field.input.id.replace('vendor-','');
+           newVend[key] = field.input.value;
+        });
+        const vendResult = await window.pywebview.api.vendor.add_vendor(newVend);
+        
 
     });
     addWindow.winBody.append(nameField, line2, line3, line4, line5);

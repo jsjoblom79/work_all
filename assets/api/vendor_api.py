@@ -24,3 +24,9 @@ class VendorAPI:
         return [
             vendor.to_dict() for vendor in vendors
         ]
+
+    def add_vendor(self, vendor):
+        ''' Adds a vendor. '''
+        new_vendor = Vendors(**vendor)
+        result = self.repo.add(new_vendor)
+        return result
