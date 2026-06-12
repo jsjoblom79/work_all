@@ -2,6 +2,7 @@
 
 export default function displayAlert(message, type, parentElement){
     const div = document.createElement('div');
+    div.id = 'alert-message';
     div.classList.add('gs-alert')
     const span = document.createElement('span');
     span.classList.add('gs-alert__label');
@@ -29,9 +30,9 @@ export default function displayAlert(message, type, parentElement){
     button.classList.add('gs-btn', 'gs-btn--sm')
     button.textContent = "close";
     button.addEventListener('click', () => {
-        document.getElementById(parentElement).innerHTML = ``;
+       div.remove();
     });
-
+    // div.removeAlert = () => { div.remove(); };
     div.append(span, message, button);
     return div;
 }

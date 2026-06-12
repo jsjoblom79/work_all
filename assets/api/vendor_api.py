@@ -25,8 +25,27 @@ class VendorAPI:
             vendor.to_dict() for vendor in vendors
         ]
 
+    def get_vendor(self, vendor_id):
+        vendor =  self.repo.get_by_model_id(Vendors, vendor_id)
+        if vendor:
+            return vendor.to_dict()
+        else:
+            return None
+
     def add_vendor(self, vendor):
         ''' Adds a vendor. '''
         new_vendor = Vendors(**vendor)
         result = self.repo.add(new_vendor)
-        return result
+        if result[0]:
+            return {'result': result[0], 'vendor': result[1].to_dict()}
+        else:
+            return {'result': result[0], 'vendor': result[1]}
+
+    def update_vendor(self, vendor):
+        print(vendor)
+        updated_vendor = Vendors(**vendor)
+        result = self.repo.update(updated_vendor)
+        if result[0]:
+            return {'result': result[0], 'vendor': result[1].to_dict()}
+        else:
+            return {'result': result[0], 'vendor': result[1]}

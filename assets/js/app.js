@@ -1,5 +1,6 @@
 import displayTitleAndMenu from "/assets/js/AppBase/TitleAndMenu.js";
 import displayVendorList, { displayAddVendor } from "/assets/js/sections/vendors/vendor_list.js";
+import displayVendor from "/assets/js/sections/vendors/vendors.js";
 
 // This variable needs to be available globally within this
 let main;
@@ -19,7 +20,11 @@ async function navigate(location){
             break;
         case "vendors":
             const vendList = await displayVendorList();
-            const vendAdd = await displayAddVendor();
+            vendList.addEventListener('vendorselected', async(e) => {
+                main.removeElement();
+                main.appendElement(await displayVendor(e.detail));
+            });
+            const vendAdd = await displayAddVendor(vendList);
             main.appendElements(vendList, vendAdd);
             break;
         case "systems":
