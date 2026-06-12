@@ -8,5 +8,12 @@ export default function returnDate(dateString){
     } else {
         return null;
     }
+}
 
+export function returnISODate(dateString){
+    if(dateString !== null){
+        return dateString.substring(0,10);
+    } else {
+        return null;
+    }
 }

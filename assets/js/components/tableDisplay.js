@@ -1,6 +1,6 @@
 "use strict";
 
-export default async function displayTables(tableId, headerArray, dataArray, filterTableResultsArray=[], displayOrderArray=[]){
+export default async function displayTables(tableId, headerArray, dataArray, filterTableResultsArray=[]){
     const tableDiv = document.createElement('div');
     const table = document.createElement('table');
     table.id=tableId;
@@ -34,8 +34,8 @@ export default async function displayTables(tableId, headerArray, dataArray, fil
     // finally natural object-key order.
     const resolveKeyOrder = (data) => {
         const filter = filterTableResultsArray.length ? filterTableResultsArray : null;
-        if (displayOrderArray.length) {
-            return displayOrderArray.filter(k => (!filter || filter.includes(k)) && Object.prototype.hasOwnProperty.call(data, k));
+        if (filterTableResultsArray.length) {
+            return filterTableResultsArray.filter(k => (!filter || filter.includes(k)) && Object.prototype.hasOwnProperty.call(data, k));
         }
         return filter ? filter.filter(k => Object.prototype.hasOwnProperty.call(data, k)) : Object.keys(data);
     };

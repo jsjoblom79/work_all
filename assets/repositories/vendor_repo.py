@@ -61,7 +61,7 @@ class VendorRepo:
             logger.error("get_by_model_id failed: %s", e)
             return None
 
-    def get_all_children(self, model, parent_id):
+    def get_vendor_contacts(self, model, parent_id):
         """Return rows where model.vendor_id == parent_id, or [] on error."""
         try:
             stmt = select(model).where(model.vendor_id == parent_id)

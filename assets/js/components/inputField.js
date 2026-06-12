@@ -1,6 +1,6 @@
 "use strict";
 
-export default async function displayField(name, id, type, classList, initialValue=''){
+export default async function displayField(name, id, type, initialValue=''){
     const div = document.createElement('div');
     div.classList.add('gs-field');
 
@@ -11,7 +11,7 @@ export default async function displayField(name, id, type, classList, initialVal
     const input = document.createElement('input');
     input.id = id;
     input.type = type;
-    input.classList.add(classList);
+    input.classList.add('gs-input');
     input.value = initialValue;
     div.appendChild(label);
     div.appendChild(input);
