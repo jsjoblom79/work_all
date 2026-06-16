@@ -46,7 +46,13 @@ export default function displayWindow(title, hasDropDown=true, isCollapsed=true)
 
     divWin.setTitle = (title) => { spanTitle.textContent = title; };
     divWin.addContent = (...elements) => { winBody.append(...elements); };
-    divWin.removeContent = (element) => { winBody.removeChild(element); };
+    divWin.removeContent = (element) => {
+        try {
+            winBody.removeChild(element);
+        } catch (error) {
+            console.log(error.message);
+        }
+    };
     divWin.clearContent = () => { winBody.replaceChildren(); };
 
     return divWin;

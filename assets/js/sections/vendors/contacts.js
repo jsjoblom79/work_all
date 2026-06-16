@@ -32,11 +32,16 @@ export async function displayContactTable(vendorId){
     contactTable.addEventListener('rowselect', (e) => {
         contactAddWin.updateContact(e.detail);
     });
+    contactTableWin.refresh = async() => {
+      const contacts = await window.pywebview.api.vendor.get_all_contacts(vendorId);
+      contactTable.refresh(contacts);
+    };
     contactTableWin.winBody.append(contactTable);
     return contactTableWin;
 }
 
-export async function displayAddContact(vendorId = null, contact){
+export async function displayAddContact(vendorId = null){
+    let contact;
     const contactAddWin = displayWindow('Add Contact', true, true);
     const contactFname = await displayField('First Name', 'contact-first_name', 'text');
     const contactLname = await displayField('Last Name', 'contact-last_name', 'text');
@@ -64,17 +69,61 @@ export async function displayAddContact(vendorId = null, contact){
         const results = await window.pywebview.api.vendor.add_contact(newContact);
         if(results.result){
             contactAddWin.winBody.prepend(await displayAlert(`${results.contact['first_name']} was successfully added. `, 'success'));
+            await contactTableWin.refresh();
         } else {
             contactAddWin.winBody.prepend(await displayAlert('Contact was not added. ', 'error'));
         }
     });
 
-    contactAddWin.updateContact = (contact) => {
+    const updateContactBtn = displayButton('Update', ['gs-btn', 'gs-btn--primary'], async() => {
         fields.forEach(field => {
             const key = field.input.id.replace('contact-','');
-            field.input.value = contact[key];
+            contact[key] = field.input.value;
+            if(key.includes('active')){
+                contact[key] = !!field.input.checked;
+            }
         });
+        const results = await pywebview.api.vendor.update_contact(contact);
+        if(results.result){
+            contactAddWin.winBody.prepend(await displayAlert(`${results.contact['first_name']} ${results.contact['last_name']} was updated. `, 'success'));
+            await contactTableWin.refresh();
+            contactAddWin.removeContent(updateContactBtn);
+            contactAddWin.addContent(addContactBtn);
+            clearFields();
+        } else {
+            contactAddWin.winBody.prepend(await displayAlert(`${results.contact['first_name']} ${results.contact['last_name']} was not updated. `, 'error'));
+        }
+    });
+    contactAddWin.updateContact = (cnt) => {
+        contact = cnt;
+        if (contact !== null) {
+            fields.forEach(field => {
+                const key = field.input.id.replace('contact-', '');
+                field.input.value = contact[key];
+                if(key.includes('active')){
+                    field.input.checked = !!contact[key];
+                }
+            });
+            contactAddWin.setTitle(`Update Contact ${contact.first_name} ${contact.last_name}`);
+            contactAddWin.removeContent(addContactBtn);
+            contactAddWin.addContent(updateContactBtn);
+
+        } else {
+            clearFields();
+            contactAddWin.setTitle('Add Contact');
+            contactAddWin.removeContent(updateContactBtn);
+            contactAddWin.addContent(addContactBtn);
+        }
+
     }
+    const clearFields = () => {
+        fields.forEach(field => {
+                field.input.value = null;
+                if (field.input.checked){
+                    field.input.checked = false;
+                }
+            });
+    };
     contactAddWin.winBody.append(line1, line2, line3, addContactBtn);
     return contactAddWin;
 }

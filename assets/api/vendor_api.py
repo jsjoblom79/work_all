@@ -67,3 +67,16 @@ class VendorAPI:
             return {'result': result[0], 'vendor': result[1].to_dict()}
         else:
             return {'result': result[0], 'vendor': result[1]}
+
+    def update_contact(self, contact):
+        updated_contact = Contacts(**contact)
+        for column in inspect(Contacts).mapper.column_attrs:
+            if 'date' in column.key:
+                value = getattr(updated_contact, column.key)
+                if value:
+                    setattr(updated_contact, column.key, parse_datetime(value))
+        result = self.repo.update(updated_contact)
+        if result[0]:
+            return {'result': result[0], 'contact': result[1].to_dict()}
+        else:
+            return {'result': result[0], 'contact': result[1]}
