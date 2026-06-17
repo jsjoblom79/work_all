@@ -21,7 +21,7 @@ export default async function displayVendorContacts(vendorId){
 }
 
 export async function displayContactTable(vendorId){
-    const contactTableWin = displayWindow('Valid Contacts',true);
+    const contactTableWin = displayWindow('Valid Contacts',true, false);
     const contacts = await window.pywebview.api.vendor.get_all_contacts(vendorId);
     const contactTable = await displayTables(
         'vendor-contacts',

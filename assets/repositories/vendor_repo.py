@@ -70,10 +70,10 @@ class VendorRepo:
             logger.error("get_all_children failed: %s", e)
             return []
 
-    def get_all_product_children(self, model, parent_id):
+    def get_all_products(self, model, parent_id):
         """Return rows where model.product_id == parent_id, or [] on error."""
         try:
-            stmt = select(model).where(model.product_id == parent_id)
+            stmt = select(model).where(model.vendor_id == parent_id)
             return self.session.scalars(stmt).all()
         except SQLAlchemyError as e:
             logger.error("get_all_product_children failed: %s", e)

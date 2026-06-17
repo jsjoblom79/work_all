@@ -29,6 +29,11 @@ class VendorAPI:
         contacts = self.repo.get_vendor_contacts(Contacts, vendorId)
         return [ contact.to_dict() for contact in contacts]
 
+    def get_all_products(self, vendorId):
+        ''' Gets all products and returns dictionaries. '''
+        products = self.repo.get_all_products(Products, vendorId)
+        return [ product.to_dict() for product in products]
+
     def get_vendor(self, vendor_id):
         vendor =  self.repo.get_by_model_id(Vendors, vendor_id)
         if vendor:
