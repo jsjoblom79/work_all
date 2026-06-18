@@ -7,6 +7,7 @@ import displayField from "/assets/js/components/inputField.js";
 import displayTwoFields, { displayThreeFields } from "/assets/js/components/displayMultipleFields.js";
 import displayButton from "/assets/js/components/button.js";
 import displayAlert from "/assets/js/components/alertMessage.js";
+import {returnISODate} from "/assets/js/helper/helper_functions.js";
 
 let contactWin;
 let contactTableWin;
@@ -21,7 +22,7 @@ export default async function displayVendorContacts(vendorId){
 }
 
 export async function displayContactTable(vendorId){
-    const contactTableWin = displayWindow('Valid Contacts',true, false);
+    const contactTableWin = displayWindow('Contacts List',true, false);
     const contacts = await window.pywebview.api.vendor.get_all_contacts(vendorId);
     const contactTable = await displayTables(
         'vendor-contacts',
@@ -104,6 +105,7 @@ export async function displayAddContact(vendorId = null){
                     field.input.checked = !!contact[key];
                 }
             });
+            contactLastUpdated.input.value = returnISODate(contact['modify_date']);
             contactAddWin.setTitle(`Update Contact ${contact.first_name} ${contact.last_name}`);
             contactAddWin.removeContent(addContactBtn);
             contactAddWin.addContent(updateContactBtn);

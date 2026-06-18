@@ -3,6 +3,7 @@ import displayVendorList, { displayAddVendor } from "/assets/js/sections/vendors
 import displayVendor from "/assets/js/sections/vendors/vendors.js";
 import displayVendorContacts from "/assets/js/sections/vendors/contacts.js";
 import displayProductsWindow from "/assets/js/sections/vendors/products.js";
+import displayNotesWindow from "/assets/js/sections/vendors/notes.js";
 
 // This variable needs to be available globally within this
 let main;
@@ -22,7 +23,8 @@ async function VendorNavigation(){
                 main.appendElements(
                     await displayVendor(e.detail),
                     await displayVendorContacts(e.detail),
-                    await displayProductsWindow(e.detail)
+                    await displayProductsWindow(e.detail),
+                    await displayNotesWindow(e.detail)
                 );
             });
             const vendAdd = await displayAddVendor(vendList);

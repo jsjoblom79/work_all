@@ -112,7 +112,7 @@ class Products(Base):
     model:          Mapped[Optional[str]]       = mapped_column(Text)
     serial:         Mapped[Optional[str]]       = mapped_column(Text)
     service_level:  Mapped[Optional[str]]       = mapped_column(Text)
-    create_date:    Mapped[Optional[datetime]]  = mapped_column(DateTime, default=func.now())
+    create_date:    Mapped[datetime]  = mapped_column(DateTime, nullable=False, default=func.now())
     update_date:    Mapped[Optional[datetime]]  = mapped_column(DateTime)
     is_used:        Mapped[Optional[bool]]      = mapped_column(Boolean, nullable=False, server_default=text('0'))
 

@@ -34,6 +34,11 @@ class VendorAPI:
         products = self.repo.get_all_products(Products, vendorId)
         return [ product.to_dict() for product in products]
 
+    def get_all_notes(self, vendorId):
+        ''' Gets all notes and returns dictionaries. '''
+        notes = self.repo.get_all_notes(Comments, vendorId)
+        return [note.to_dict() for note in notes]
+
     def get_vendor(self, vendor_id):
         vendor =  self.repo.get_by_model_id(Vendors, vendor_id)
         if vendor:
@@ -58,6 +63,25 @@ class VendorAPI:
             return {'result': result[0], 'contact': result[1].to_dict()}
         else:
             return {'result': result[0], 'contact': result[1]}
+
+    def add_product(self, product):
+        ''' Adds a product. '''
+        new_product = Products(**product)
+        result = self.repo.add(new_product)
+
+        if result[0]:
+            return {'result': result[0], 'product': result[1].to_dict()}
+        else:
+            return {'result': result[0], 'product': result[1]}
+
+    def add_note(self, note):
+        ''' Adds a note. '''
+        new_note = Comments(**note)
+        result = self.repo.add(new_note)
+        if result[0]:
+            return {'result': result[0], 'note': result[1].to_dict()}
+        else:
+            return {'result': result[0], 'note': result[1]}
 
     def update_vendor(self, vendor):
         updated_vendor = Vendors(**vendor)
@@ -85,3 +109,16 @@ class VendorAPI:
             return {'result': result[0], 'contact': result[1].to_dict()}
         else:
             return {'result': result[0], 'contact': result[1]}
+
+    def update_product(self, product):
+        updated_product = Products(**product)
+        for column in inspect(Products).mapper.column_attrs:
+            if 'date' in column.key:
+                value = getattr(updated_product, column.key)
+                if value:
+                    setattr(updated_product, column.key, parse_datetime(value))
+        result = self.repo.update(updated_product)
+        if result[0]:
+            return {'result': result[0], 'product': result[1].to_dict()}
+        else:
+            return {'result': result[0], 'product': result[1]}

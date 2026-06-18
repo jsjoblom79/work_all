@@ -78,3 +78,12 @@ class VendorRepo:
         except SQLAlchemyError as e:
             logger.error("get_all_product_children failed: %s", e)
             return []
+
+    def get_all_notes(self, model, parent_id):
+        """Return all rows of notes for vendor."""
+        try:
+            stmt = select(model).where(model.vendor_id == parent_id)
+            return self.session.scalars(stmt).all()
+        except SQLAlchemyError as e:
+            logger.error("get_all_notes failed: %s", e)
+            return []
