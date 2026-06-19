@@ -4,6 +4,7 @@ import displayVendor from "/assets/js/sections/vendors/vendors.js";
 import displayVendorContacts from "/assets/js/sections/vendors/contacts.js";
 import displayProductsWindow from "/assets/js/sections/vendors/products.js";
 import displayNotesWindow from "/assets/js/sections/vendors/notes.js";
+//import displayInvoiceWindow from "/assets/js/sections/vendors/invoices.js";
 
 // This variable needs to be available globally within this
 let main;
@@ -24,6 +25,7 @@ async function VendorNavigation(){
                     await displayVendor(e.detail),
                     await displayVendorContacts(e.detail),
                     await displayProductsWindow(e.detail),
+                    await displayInvoiceWindow(e.detail),
                     await displayNotesWindow(e.detail)
                 );
             });

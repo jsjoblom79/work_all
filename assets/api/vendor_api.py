@@ -1,5 +1,5 @@
 from datetime import datetime
-from sqlalchemy import create_engine, inspect
+from sqlalchemy import create_engine, inspect, select
 from sqlalchemy.orm import sessionmaker, scoped_session
 from assets.models.vendor_models import Base, Vendors, Contacts, Comments, Invoices, Products, ProductPrices
 from assets.repositories.vendor_repo import VendorRepo
@@ -45,6 +45,33 @@ class VendorAPI:
             return vendor.to_dict()
         else:
             return None
+
+    def get_invoice_product_by_id(self, invoiceId):
+        stmt = (select(Invoices, ProductPrices, Products)
+                .join(Invoices.productPrice)
+                .join(ProductPrices.products)
+                .where(Invoices.id == invoiceId))
+
+        results = self.db.execute(stmt).all()
+        return [
+            [invoice.to_dict(), price.to_dict(), product.to_dict()] for invoice, price, product in results
+        ]
+
+    def get_invoice_by_vendor(self, vendorId):
+        stmt = select(Invoices).where(Invoices.vendor_id == vendorId)
+        results = self.db.execute(stmt).all()
+        return [invoice.to_dict() for invoice in results]
+
+    def get_product_prices_by_vendor(self, vendorId):
+        stmt = (select(ProductPrices, Products)
+                .join(ProductPrices.products)
+                .where(
+                        Products.vendor_id == vendorId and
+                        ProductPrices.is_active == True
+        ))
+        results = self.db.execute(stmt).all()
+        return [[price.to_dict(), product.to_dict()] for price, product in results]
+
 
     def add_vendor(self, vendor):
         ''' Adds a vendor. '''

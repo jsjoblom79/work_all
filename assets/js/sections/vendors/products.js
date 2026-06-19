@@ -26,8 +26,8 @@ export default async function displayProductsWindow(vendorId)  {
 export async function displayProductList(vendorId){
     const listWin = displayWindow('Products List', true, false);
     const products = await window.pywebview.api.vendor.get_all_products(vendorId);
-    const tableFields = ['Name', 'Description', 'In Use', 'Created'];
-    const tableFilterFields = ['name', 'description', 'is_used', 'create_date'];
+    const tableFields = ['Name', 'Description', 'In Use', 'Price', 'Created'];
+    const tableFilterFields = ['name', 'description', 'is_used','price', 'create_date'];
     const productTable = await displayTables('products',tableFields,products,tableFilterFields);
 
     productTable.addEventListener('rowselect', (e) => {
@@ -54,13 +54,14 @@ export async function displayProductAddUpdate(vendorId = null){
     const productCreateDate = await displayField('Create Date', 'product-create_date', 'date');
     const productUpdateDate = await displayField('Last Updated', 'product-update_date', 'date');
     const productIsUsed = await displayField('Currently Used', 'product-is_used', 'checkbox');
+    const productPrice = await displayField('Price', 'product-price', 'text');
 
     const line1 = displayTwoFields([productName, productDescription]);
     const line2 = displayThreeFields([productItemNumber, productModel, productSerial]);
-    const line3 = displayTwoFields([productServiceLevel, productIsUsed]);
+    const line3 = displayTwoFields([productServiceLevel, productIsUsed, productPrice]);
     const line4 = displayTwoFields([productCreateDate, productUpdateDate]);
 
-    const fields = [productName, productDescription, productModel, productSerial, productIsUsed, productServiceLevel, productItemNumber]
+    const fields = [productName, productDescription, productModel, productSerial, productIsUsed, productServiceLevel, productItemNumber, productPrice]
 
     const addBtn = displayButton('Add', ['gs-btn', 'gs-btn--primary'], async() => {
         const newProduct = {};
