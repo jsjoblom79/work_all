@@ -4,7 +4,7 @@ import displayVendor from "/assets/js/sections/vendors/vendors.js";
 import displayVendorContacts from "/assets/js/sections/vendors/contacts.js";
 import displayProductsWindow from "/assets/js/sections/vendors/products.js";
 import displayNotesWindow from "/assets/js/sections/vendors/notes.js";
-//import displayInvoiceWindow from "/assets/js/sections/vendors/invoices.js";
+import displayInvoiceWindow from "/assets/js/sections/vendors/invoices.js";
 
 // This variable needs to be available globally within this
 let main;

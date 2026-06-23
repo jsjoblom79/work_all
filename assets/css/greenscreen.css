@@ -386,6 +386,7 @@ small, .gs-muted {
   border-radius: var(--gs-radius);
   text-shadow: 0 0 5px rgba(51, 255, 51, 0.35);
   transition: background 0.1s, color 0.1s, text-shadow 0.1s, box-shadow 0.1s;
+  margin-right: 10px;
 }
 
 .gs-btn:hover,

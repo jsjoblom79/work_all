@@ -58,7 +58,7 @@ export async function displayProductAddUpdate(vendorId = null){
 
     const line1 = displayTwoFields([productName, productDescription]);
     const line2 = displayThreeFields([productItemNumber, productModel, productSerial]);
-    const line3 = displayTwoFields([productServiceLevel, productIsUsed, productPrice]);
+    const line3 = displayThreeFields([productServiceLevel, productIsUsed, productPrice]);
     const line4 = displayTwoFields([productCreateDate, productUpdateDate]);
 
     const fields = [productName, productDescription, productModel, productSerial, productIsUsed, productServiceLevel, productItemNumber, productPrice]
@@ -125,7 +125,7 @@ export async function displayProductAddUpdate(vendorId = null){
                 if (key.includes('used')) {
                     field.input.checked = !!product[key];
                 }
-                console.log(product['create_date']);
+                console.log(product['price']);
                 productCreateDate.input.value = returnISODate(product['create_date']);
                 detailWin.removeContent(addBtn);
                 detailWin.addContent(updateBtn);

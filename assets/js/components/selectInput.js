@@ -1,13 +1,18 @@
 "use strict";
 
-export default function displaySelectInput(name, options, classList, id, event = null){
+export default function displaySelectInput(options, id, event = null, name=null){
     const div = document.createElement('div');
     div.classList.add('gs-field');
 
     const select = document.createElement('select');
-    select.classList.add(classList);
+    select.classList.add('gs-select');
     select.id = id;
-
+    let label;
+    if(name !== null){
+        label = document.createElement('label');
+        label.for = id;
+        label.textContent = name;
+    }
     //verify options are arrays
     const selOption = {textContent: 'Select an option to continue', value:'-1'};
     if(Array.isArray(options)){
@@ -31,8 +36,12 @@ export default function displaySelectInput(name, options, classList, id, event =
     if(event){
        select.addEventListener('change', event);
     }
+    if(name !== null){
+        div.append(label, select);
+    } else {
+        div.append(select);
+    }
 
-    div.append(select);
     div.select = select;
     return div;
 }

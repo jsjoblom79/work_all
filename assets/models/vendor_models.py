@@ -84,15 +84,13 @@ class Invoices(Base):
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, unique=True)
     vendor_id: Mapped[int] = mapped_column(ForeignKey('vendors.id'), nullable=False)
-    product_price_id: Mapped[int] = mapped_column(ForeignKey('product_prices.id'), nullable=False)
     invoice_number: Mapped[Optional[str]] = mapped_column(Text)
     received_date: Mapped[Optional[datetime]] = mapped_column(Date)
     due_date: Mapped[Optional[datetime]] = mapped_column(Date)
     invoice_total: Mapped[Optional[float]] = mapped_column(REAL)
 
     vendor: Mapped['Vendors'] = relationship('Vendors', back_populates='invoices')
-    product_prices: Mapped[list['ProductPrices']] = relationship( back_populates='invoices')
-
+    invoice_items: Mapped[list['InvoiceItems']] = relationship('InvoiceItems', back_populates='invoices')
 
     def to_dict(self) -> dict:
         return {
@@ -121,7 +119,7 @@ class Products(Base):
     is_used:        Mapped[Optional[bool]]      = mapped_column(Boolean, nullable=False, server_default=text('0'))
 
     vendor:         Mapped['Vendors']               = relationship('Vendors', back_populates='products')
-
+    invoice_items: Mapped[list['InvoiceItems']] = relationship('InvoiceItems', back_populates='products')
 
 
     def to_dict(self) -> dict:
@@ -134,6 +132,7 @@ class Products(Base):
             'model':            self.model,
             'serial':           self.serial,
             'service_level':    self.service_level,
+            'price':            self.price,
             'create_date':      self.create_date.isoformat() if self.create_date else None,
             'update_date':      self.update_date.isoformat() if self.update_date else None,
             'is_used':          self.is_used,
@@ -159,23 +158,19 @@ class Comments(Base):
 
 
 
-class ProductPrices(Base):
-    __tablename__ = 'product_prices'
+class InvoiceItems(Base):
+    __tablename__ = 'invoice_items'
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     product_id: Mapped[int] = mapped_column(ForeignKey('products.id'), nullable=False)
-    price: Mapped[Optional[int]] = mapped_column(Integer)
-    is_active: Mapped[Optional[bool]] = mapped_column(Boolean, nullable=False, server_default=text('0'))
-    create_date: Mapped[Optional[datetime]] = mapped_column(DateTime, default=func.now())
+    invoice_id: Mapped[int] = mapped_column(ForeignKey('invoices.id'), nullable=False)
 
-    # products: Mapped['Products'] = relationship('Products', back_populates='ProductPrices')
-    invoices: Mapped['Invoices'] = relationship( back_populates='product_prices')
+    products: Mapped['Products'] = relationship(back_populates='invoice_items')
+    invoices: Mapped['Invoices'] = relationship(back_populates='invoice_items')
 
     def to_dict(self) -> dict:
         return {
             'id': self.id,
             'product_id': self.product_id,
-            'price': self.price,
-            'is_active': self.is_active,
-            'create_date': self.create_date.isoformat() if self.create_date else None,
+            'invoice_id': self.invoice_id,
         }

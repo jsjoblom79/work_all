@@ -57,7 +57,7 @@ export async function displayAddContact(vendorId = null){
     const line3 = displayTwoFields([contactLastUpdated, contactActive]);
 
     const fields = [contactFname, contactLname, contactPhone, contactEmail, contactTitle, contactActive]
-    const addContactBtn = displayButton('Add', ['gs-btn', 'gs-btn--primary'], async() =>{
+    const addContactBtn = displayButton('Add', ['gs-btn--primary'], async() =>{
         const newContact = {};
         fields.forEach(field => {
            const key = field.input.id.replace('contact-', '');
@@ -75,8 +75,8 @@ export async function displayAddContact(vendorId = null){
             contactAddWin.winBody.prepend(await displayAlert('Contact was not added. ', 'error'));
         }
     });
-
-    const updateContactBtn = displayButton('Update', ['gs-btn', 'gs-btn--primary'], async() => {
+    const deleteBtn = displayButton('Remove', ['gs-btn--primary'], () => {});
+    const updateContactBtn = displayButton('Update', ['gs-btn--primary'], async() => {
         fields.forEach(field => {
             const key = field.input.id.replace('contact-','');
             contact[key] = field.input.value;
@@ -108,12 +108,13 @@ export async function displayAddContact(vendorId = null){
             contactLastUpdated.input.value = returnISODate(contact['modify_date']);
             contactAddWin.setTitle(`Update Contact ${contact.first_name} ${contact.last_name}`);
             contactAddWin.removeContent(addContactBtn);
-            contactAddWin.addContent(updateContactBtn);
+            contactAddWin.addContent(updateContactBtn, deleteBtn);
 
         } else {
             clearFields();
             contactAddWin.setTitle('Add Contact');
             contactAddWin.removeContent(updateContactBtn);
+            contactAddWin.removeContent(deleteBtn);
             contactAddWin.addContent(addContactBtn);
         }
 

@@ -1,5 +1,7 @@
 "use strict";
 
+import displayButton from "/assets/js/components/button.js";
+
 export default async function displayTables(tableId, headerArray, dataArray, filterTableResultsArray=[]){
     const tableDiv = document.createElement('div');
     const table = document.createElement('table');
@@ -45,13 +47,16 @@ export default async function displayTables(tableId, headerArray, dataArray, fil
 
         for (const key of resolveKeyOrder(data)) {
             const td = document.createElement('td');
-            td.textContent = data[key];
+
             if(key.includes('date') && data[key] != null){
                 const [year, month, day] = data[key].substring(0, 10).split('-');
                 td.textContent = `${month}/${day}/${year}`;//data[key].substring(0, 10);
-            }
-            if(typeof data[key] === 'boolean'){
+            } else if(typeof data[key] === 'boolean'){
                 if(data[key]){ td.textContent = 'X';} else { td.textContent = '';}
+            } else if(key.includes('edit')){
+                td.append(data[key]);
+            } else {
+                 td.textContent = data[key];
             }
             tr.append(td);
         }
@@ -75,12 +80,28 @@ export default async function displayTables(tableId, headerArray, dataArray, fil
     table.selectedRow = null;
     table.append(thead, tbody);
     tableDiv.append(table);
-
-    tableDiv.addRow = (data) => {tbody.append(createRow(data)); };
+    let tableData = [];
+    tableDiv.addRow = (data) => {
+        data['edit'] = displayButton('remove',['gs-btn--danger', 'gs-btn--sm'], () => {
+           const index = tableData.findIndex(product => product.id === data['id']);
+           tableData.splice(index, 1);
+           tableDiv.refresh(tableData);
+        });
+        tbody.append(createRow(data));
+        tableData.push(data);
+    };
+    tableDiv.clearData = () => {
+        tableDiv.refresh([]);
+    }
     tableDiv.refresh = (newDataArray) => {
         tbody.replaceChildren(...newDataArray.map(createRow));
         tableDiv.selectedRow = null;
     };
-
+    tableDiv.getData = () => {
+        return tableData;
+    };
+    tableDiv.removeObject = (obj) => {
+        tableData.pop(obj);
+    };
     return tableDiv;
 }

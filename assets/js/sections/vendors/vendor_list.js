@@ -10,7 +10,7 @@ import displayAlert from "/assets/js/components/alertMessage.js";
 export default async function displayVendorList(){
     let vendorList = await window.pywebview.api.vendor.get_all_vendors();
 
-    const vendorSelect = displaySelectInput('Select a vendor',vendorList,'gs-select','vendor-list-2');
+    const vendorSelect = displaySelectInput(vendorList,'vendor-list-2');
 
 
     const vendorWindow = displayWindow('select vendor', false,false);
@@ -21,7 +21,7 @@ export default async function displayVendorList(){
 
     vendorWindow.refresh = async () => {
         vendorList = await window.pywebview.api.vendor.get_all_vendors();
-        const newSelect = displaySelectInput('Select a vendor',vendorList,'gs-select','vendor-list-2');
+        const newSelect = displaySelectInput(vendorList,'gs-select','vendor-list-2');
         vendorSelect.replaceWith(newSelect.select.parentElement ?? newSelect);
     }
 
@@ -30,14 +30,14 @@ export default async function displayVendorList(){
 
 export async function displayAddVendor(vendorSelect){
     const addWindow = await displayWindow('Add Vendor', true);
-    const nameField = await displayField('Name', 'vendor-name', 'text', 'gs-input');
-    const add1Field = await displayField('Add 1', 'vendor-address1', 'text', 'gs-input');
-    const add2Field = await displayField('Add 2', 'vendor-address2', 'text', 'gs-input');
-    const cityField = await displayField('city', 'vendor-city', 'text', 'gs-input');
-    const stateField = await displayField('state', 'vendor-state', 'text', 'gs-input');
-    const zipField = await displayField('Zip', 'vendor-zip', 'text', 'gs-input');
-    const countryField = await displayField('country', 'vendor-country', 'text', 'gs-input');
-    const websiteField = await displayField('website', 'vendor-website', 'text', 'gs-input');
+    const nameField = await displayField('Name', 'vendor-name', 'text' );
+    const add1Field = await displayField('Add 1', 'vendor-address1', 'text');
+    const add2Field = await displayField('Add 2', 'vendor-address2', 'text');
+    const cityField = await displayField('city', 'vendor-city', 'text');
+    const stateField = await displayField('state', 'vendor-state', 'text');
+    const zipField = await displayField('Zip', 'vendor-zip', 'text');
+    const countryField = await displayField('country', 'vendor-country', 'text');
+    const websiteField = await displayField('website', 'vendor-website', 'text');
 
     const line2 = await displayTwoField([add1Field, add2Field]);
     const line3 = await displayThreeFields([cityField, stateField, zipField]);

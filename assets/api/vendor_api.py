@@ -1,7 +1,9 @@
 from datetime import datetime
+from unittest import result
+
 from sqlalchemy import create_engine, inspect, select
 from sqlalchemy.orm import sessionmaker, scoped_session
-from assets.models.vendor_models import Base, Vendors, Contacts, Comments, Invoices, Products, ProductPrices
+from assets.models.vendor_models import Base, Vendors, Contacts, Comments, Invoices, Products, InvoiceItems
 from assets.repositories.vendor_repo import VendorRepo
 from assets.helperpy.helper_functions import parse_datetime
 
@@ -39,6 +41,11 @@ class VendorAPI:
         notes = self.repo.get_all_notes(Comments, vendorId)
         return [note.to_dict() for note in notes]
 
+    def get_all_invoices(self, vendorId):
+        ''' Gets all invoices and returns dictionaries. '''
+        invoices = self.repo.get_all_invoices(Invoices, vendorId)
+        return [ invoice.to_dict() for invoice in invoices]
+
     def get_vendor(self, vendor_id):
         vendor =  self.repo.get_by_model_id(Vendors, vendor_id)
         if vendor:
@@ -46,32 +53,17 @@ class VendorAPI:
         else:
             return None
 
-    def get_invoice_product_by_id(self, invoiceId):
-        stmt = (select(Invoices, ProductPrices, Products)
-                .join(Invoices.productPrice)
-                .join(ProductPrices.products)
-                .where(Invoices.id == invoiceId))
-
-        results = self.db.execute(stmt).all()
-        return [
-            [invoice.to_dict(), price.to_dict(), product.to_dict()] for invoice, price, product in results
-        ]
+    def get_product_by_id(self, productId):
+        product = self.repo.get_by_model_id(Products, productId)
+        if product:
+            return product.to_dict()
+        else:
+            return None
 
     def get_invoice_by_vendor(self, vendorId):
         stmt = select(Invoices).where(Invoices.vendor_id == vendorId)
         results = self.db.execute(stmt).all()
         return [invoice.to_dict() for invoice in results]
-
-    def get_product_prices_by_vendor(self, vendorId):
-        stmt = (select(ProductPrices, Products)
-                .join(ProductPrices.products)
-                .where(
-                        Products.vendor_id == vendorId and
-                        ProductPrices.is_active == True
-        ))
-        results = self.db.execute(stmt).all()
-        return [[price.to_dict(), product.to_dict()] for price, product in results]
-
 
     def add_vendor(self, vendor):
         ''' Adds a vendor. '''
@@ -109,6 +101,30 @@ class VendorAPI:
             return {'result': result[0], 'note': result[1].to_dict()}
         else:
             return {'result': result[0], 'note': result[1]}
+
+    def add_invoice(self, invoice):
+        ''' Adds a invoice. '''
+        new_invoice = Invoices(**invoice)
+        for column in inspect(Invoices).mapper.column_attrs:
+            if 'date' in column.key:
+                value = getattr(new_invoice, column.key)
+                if value:
+                    setattr(new_invoice, column.key, parse_datetime(value))
+        results = self.repo.add(new_invoice)
+        if results[0]:
+            return {'result': results[0], 'invoice': results[1].to_dict()}
+        else:
+            return {'result': results[0], 'invoice': results[1]}
+
+    def add_invoice_item(self, invoice_item):
+        ''' Adds a invoice product. '''
+        new_invoice_item = InvoiceItems(**invoice_item)
+
+        results = self.repo.add(new_invoice_item)
+        if results[0]:
+            return {'result': results[0], 'invoiceItem': results[1].to_dict()}
+        else:
+            return {'result': results[0], 'invoiceItem': results[1]}
 
     def update_vendor(self, vendor):
         updated_vendor = Vendors(**vendor)
