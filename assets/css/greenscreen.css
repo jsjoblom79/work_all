@@ -564,6 +564,7 @@ small, .gs-muted {
   width: 100%;
   border-collapse: collapse;
   font-size: 0.9rem;
+  margin-bottom: 10px;
 }
 
 .gs-table th {

@@ -52,6 +52,7 @@ async function navigate(location){
             break;
         case "staff":
             break;
+
     }
 }
 

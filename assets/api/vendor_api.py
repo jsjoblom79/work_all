@@ -46,6 +46,15 @@ class VendorAPI:
         invoices = self.repo.get_all_invoices(Invoices, vendorId)
         return [ invoice.to_dict() for invoice in invoices]
 
+    def get_all_invoice_items(self, invoiceId):
+        ''' Gets all invoice items and returns dictionaries. '''
+        stmt = ((select(Products).
+                join(InvoiceItems, InvoiceItems.product_id == Products.id)).
+                where(InvoiceItems.invoice_id == invoiceId))
+
+        results = self.db.execute(stmt).scalars().all()
+        return [product.to_dict() for product in results]
+
     def get_vendor(self, vendor_id):
         vendor =  self.repo.get_by_model_id(Vendors, vendor_id)
         if vendor:

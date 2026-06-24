@@ -91,7 +91,7 @@ export default async function displayTables(tableId, headerArray, dataArray, fil
         tableData.push(data);
     };
     tableDiv.clearData = () => {
-        tableDiv.refresh([]);
+        tableDiv.length = 0;
     }
     tableDiv.refresh = (newDataArray) => {
         tbody.replaceChildren(...newDataArray.map(createRow));

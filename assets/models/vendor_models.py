@@ -88,6 +88,7 @@ class Invoices(Base):
     received_date: Mapped[Optional[datetime]] = mapped_column(Date)
     due_date: Mapped[Optional[datetime]] = mapped_column(Date)
     invoice_total: Mapped[Optional[float]] = mapped_column(REAL)
+    paid: Mapped[Optional[bool]] = mapped_column(Boolean, nullable=False, server_default=text('0'))
 
     vendor: Mapped['Vendors'] = relationship('Vendors', back_populates='invoices')
     invoice_items: Mapped[list['InvoiceItems']] = relationship('InvoiceItems', back_populates='invoices')
@@ -100,6 +101,7 @@ class Invoices(Base):
             'received_date': self.received_date.isoformat() if self.received_date else None,
             'due_date': self.due_date.isoformat() if self.due_date else None,
             'invoice_total': self.invoice_total,
+            'paid': self.paid,
         }
 
 class Products(Base):

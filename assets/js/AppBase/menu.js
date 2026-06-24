@@ -21,12 +21,16 @@ export default async function displayMainMenu() {
             ul.appendChild(li);
        }
        const ulli = document.createElement('li');
+       const printBtn = document.createElement('button');
+       printBtn.classList.add('gs-menubar__trigger');
+       printBtn.textContent = 'Print';
+       printBtn.addEventListener('click', async() => await window.pywebview.api.print_window());
        const exitBtn = document.createElement('button');
        exitBtn.classList.add('gs-menubar__trigger', 'gs-btn--danger');
        exitBtn.textContent = "EXIT";
        exitBtn.addEventListener('click', async() => await window.pywebview.api.close_app());
        ulli.appendChild(exitBtn);
-       ul.appendChild(ulli);
+       ul.append(printBtn, ulli);
        nav.appendChild(ul);
     }
     return nav;

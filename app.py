@@ -1,6 +1,6 @@
 import webview
 from screeninfo import get_monitors
-
+from webview.menu import Menu, MenuAction
 from assets.api.config_api import ConfigAPI
 from assets.api.vendor_api import VendorAPI
 
@@ -12,16 +12,18 @@ class AppAPI:
     def close_app(self) -> None:
         webview.windows[0].destroy()
 
+    def print_window(self) -> None:
+        webview.windows[0].evaluate_js('window.print();')
+
 
 api = AppAPI()
 
-
-if "__main__" == __name__:
+def start_app():
     monitors = get_monitors()
     totalWidth = 0
     totalHeight = 0
-    avgWidth = 0
-    avgHeight = 0
+    # avgWidth = 0
+    # avgHeight = 0
 
     for monitor in monitors:
         totalWidth += monitor.width
@@ -36,4 +38,11 @@ if "__main__" == __name__:
         js_api=api,
         width=avgWidth / 2,
         height=avgHeight - 50, )
+
+
     webview.start(debug=True)
+
+if "__main__" == __name__:
+    start_app()
+
+
