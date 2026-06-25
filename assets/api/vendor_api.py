@@ -174,3 +174,19 @@ class VendorAPI:
             return {'result': result[0], 'product': result[1].to_dict()}
         else:
             return {'result': result[0], 'product': result[1]}
+
+    def delete_contact(self, contact):
+        to_delete = Contacts(**contact)
+        result = self.repo.delete(to_delete)
+        if result:
+            return {'result': True}
+
+        return {'result': False}
+    def delete_invoice_item(self, invoice_id, product_id):
+        stmt = select(InvoiceItems).where(InvoiceItems.invoice_id == invoice_id).where(InvoiceItems.product_id == product_id)
+        invoice_item = self.db.execute(stmt).scalar()
+
+        if invoice_item:
+            return {'result': self.repo.delete(invoice_item)}
+
+        return {'result': False}

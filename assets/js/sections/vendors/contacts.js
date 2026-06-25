@@ -75,7 +75,11 @@ export async function displayAddContact(vendorId = null){
             contactAddWin.winBody.prepend(await displayAlert('Contact was not added. ', 'error'));
         }
     });
-    const deleteBtn = displayButton('Remove', ['gs-btn--primary'], () => {});
+    // This needs to be updated.
+    const deleteBtn = displayButton('Remove', ['gs-btn--primary'], () => {
+        console.log(`Contact Id: ${contact.id} & ContactName: ${contact.first_name}`);
+    });
+    /////
     const updateContactBtn = displayButton('Update', ['gs-btn--primary'], async() => {
         fields.forEach(field => {
             const key = field.input.id.replace('contact-','');

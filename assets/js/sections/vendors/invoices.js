@@ -6,7 +6,7 @@
 import displayWindow from "/assets/js/components/displayWindow.js";
 import displayField from "/assets/js/components/inputField.js";
 import displaySelectInput from "/assets/js/components/selectInput.js";
-import displayTwoFields, {displayThreeFields} from "/assets/js/components/displayMultipleFields.js";
+import {displayThreeFields} from "/assets/js/components/displayMultipleFields.js";
 import displayTables from "/assets/js/components/tableDisplay.js";
 import displayButton from "/assets/js/components/button.js";
 import displayAlert from "/assets/js/components/alertMessage.js";
@@ -14,14 +14,12 @@ import {returnISODate} from "/assets/js/helper/helper_functions.js";
 
 let invoiceListWindow;
 let invoiceAddWindow;
-let invoiceDetailWindow;
+
 
 export default async function displayInvoiceWindow(vendorId){
-    console.log(`Vendor ID: ${vendorId}`);
     const mainWindow = displayWindow('Invoices');
     invoiceListWindow = await displayInvoiceList(vendorId);
     invoiceAddWindow = await displayInvoiceAdd(vendorId);
-    //invoiceDetailWindow = await displayInvoiceDetail();
 
     mainWindow.winBody.append(invoiceListWindow, invoiceAddWindow);
     return mainWindow;
@@ -38,7 +36,7 @@ export async function displayInvoiceList(vendorId){
     )
     invoiceListWindow.winBody.append(invoiceListTable);
     invoiceListTable.addEventListener('rowselect', (e) => {
-        invoiceAddWindow.loadAccounts(e.detail);
+           invoiceAddWindow.loadAccounts(e.detail);
     });
 
     return invoiceListWindow
@@ -115,15 +113,41 @@ export async function displayInvoiceAdd(vendorId){
             const newItems = invoiceProductListTable.getData();
             const removeItems = currentItems.filter(curItem => !newItems.some(nItem => nItem.id === curItem.id));
             const addItems = newItems.filter(nItem => !currentItems.some(curItem => curItem.id === nItem.id));
-            console.log(`Items to be removed: `);
-            removeItems.forEach(item => {console.log(item);});
-            console.log(`Items to add: `);
-            addItems.forEach(item => {console.log(item);});
+
+            for(const item of removeItems){
+                console.log(item);
+                const result = await window.pywebview.api.vendor.delete_invoice_item(invoice.id, item.id);
+                if(result.result){
+                    invoiceAddWindow.winBody.prepend(displayAlert(`${item.name} has been removed. `, 'success'));
+                } else {
+                    invoiceAddWindow.winBody.prepend(displayAlert(`${item.name} was not removed. `, 'error'));
+                }
+            }
+            for(const item of addItems){
+                const newItem = {
+                    invoice_id: invoice.id,
+                    product_id: item.id
+                }
+                const result = await window.pywebview.api.vendor.add_invoice_item(newItem);
+                if(result.result){
+                    invoiceAddWindow.winBody.prepend(displayAlert(`${item.name} has been added. `, 'success'));
+                } else {
+                    invoiceAddWindow.winBody.prepend(displayAlert(`${item.name} was not added. `, 'error'));
+                }
+            }
+
+
         }
     });
+
+
     const clearInvoice = () => {
         fieldList.forEach(field => {
-            field.input.value = null;
+            if(field.input.id.includes('paid')){
+                field.input.checked = false;
+            } else {
+              field.input.value = null;
+            }
         });
         invoiceProductListTable.clearData();
     }
@@ -131,6 +155,7 @@ export async function displayInvoiceAdd(vendorId){
     invoiceAddWindow.loadAccounts = async(inv) => {
         invoice = inv
         if(invoice !== null){
+            invoiceProductListTable.clearData();
             fieldList.forEach(field => {
             const key = field.input.id.replace('invoice-','');
             if(key.includes('date')){
@@ -142,10 +167,10 @@ export async function displayInvoiceAdd(vendorId){
             }
             });
             const products = await window.pywebview.api.vendor.get_all_invoice_items(invoice.id);
+
             products.forEach(product => {
                 invoiceProductListTable.addRow(product);
             })
-            invoiceProductListTable.refresh(products);
             invoiceAddWindow.setTitle(`Invoice Number: ${invoice.invoice_number}`);
             invoiceAddWindow.removeContent(addBtn);
             invoiceAddWindow.addContent(updateBtn);
@@ -158,22 +183,4 @@ export async function displayInvoiceAdd(vendorId){
 
     };
     return invoiceAddWindow;
-}
-export async function displayInvoiceDetail(){
-    invoiceDetailWindow = displayWindow('Invoice Detail');
-
-    const invoiceNumberField = await displayField('Invoice Number','invoice-invoice_number','text');
-    const invoiceReceivedDateField = await displayField('Received Date', 'invoice-received_date', 'date');
-    const invoiceDueDateField = await displayField('Due Date', 'invoice-due_date', 'date');
-    const invoiceTotalField = await displayField('Total Due', 'invoice-invoice_total', 'text');
-    const invoicePaidField = await displayField('Paid', 'invoice-paid', 'checkbox');
-    const fieldList = [invoiceNumberField, invoiceReceivedDateField, invoiceDueDateField, invoiceTotalField, invoicePaidField];
-    const invoiceProductListTable = await displayTables('invoice-product_list',['Name', 'Description', 'Price'],[],['name','description', 'price']);
-
-    const line1 = displayThreeFields(invoiceNumberField, invoiceReceivedDateField, invoiceDueDateField);
-    const line2 = displayTwoFields(invoiceTotalField, invoicePaidField);
-
-    invoiceDetailWindow.winBody.append(line1, line2, invoiceProductListTable);
-
-    return invoiceDetailWindow;
 }
