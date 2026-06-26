@@ -71,15 +71,28 @@ export async function displayAddContact(vendorId = null){
         if(results.result){
             contactAddWin.winBody.prepend(await displayAlert(`${results.contact['first_name']} was successfully added. `, 'success'));
             await contactTableWin.refresh();
+            clearFields();
         } else {
             contactAddWin.winBody.prepend(await displayAlert('Contact was not added. ', 'error'));
         }
     });
-    // This needs to be updated.
-    const deleteBtn = displayButton('Remove', ['gs-btn--primary'], () => {
-        console.log(`Contact Id: ${contact.id} & ContactName: ${contact.first_name}`);
+
+    const deleteBtn = displayButton('Remove', ['gs-btn--primary'], async() => {
+        const result = await window.pywebview.api.vendor.delete_contact(contact);
+        console.log(result)
+        if(result.result){
+            contactAddWin.winBody.prepend(await displayAlert('Contact was deleted. ', 'success'));
+            contactTableWin.refresh();
+            clearFields();
+            contactAddWin.setTitle("Add Contact");
+            contactAddWin.removeContent(updateContactBtn);
+            contactAddWin.removeContent(deleteBtn);
+            contactAddWin.addContent(addContactBtn)
+        } else {
+            contactAddWin.winBody.prepend(await displayAlert('Problem deleting contact. ', 'error'));
+        }
     });
-    /////
+
     const updateContactBtn = displayButton('Update', ['gs-btn--primary'], async() => {
         fields.forEach(field => {
             const key = field.input.id.replace('contact-','');
@@ -130,6 +143,7 @@ export async function displayAddContact(vendorId = null){
                     field.input.checked = false;
                 }
             });
+        contactLastUpdated.input.value = null;
     };
     contactAddWin.winBody.append(line1, line2, line3, addContactBtn);
     return contactAddWin;

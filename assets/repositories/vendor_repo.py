@@ -22,10 +22,11 @@ class VendorRepo:
             logger.error("add failed: %s", e)
             return False, None
 
-    def delete(self, item):
+    def delete(self, item, model):
         """Delete a row. Returns True on success, False otherwise."""
         try:
-            self.session.delete(item)
+            item_to_delete = self.session.query(model).filter_by(id=item.id).first()
+            self.session.delete(item_to_delete)
             self.session.commit()
             return True
         except SQLAlchemyError as e:

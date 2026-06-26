@@ -51,6 +51,14 @@ export default async function displayTables(tableId, headerArray, dataArray, fil
             if(key.includes('date') && data[key] != null){
                 const [year, month, day] = data[key].substring(0, 10).split('-');
                 td.textContent = `${month}/${day}/${year}`;//data[key].substring(0, 10);
+            } else if(key.includes('phone')){
+                const phone = data[key];
+                const prefix = phone.substring(0,3);
+                const id = phone.substring(3,6);
+                const postfix = phone.substring(6, 10);
+                td.innerHTML = `<a href="tel:+1${phone}" target="_blank">(${prefix}) ${id}-${postfix}</a>`;
+            } else if(key.includes('email')){
+                td.innerHTML = `<a href="mailto:${data[key]}" target="_blank">${data[key]}</a>`;
             } else if(typeof data[key] === 'boolean'){
                 if(data[key]){ td.textContent = 'X';} else { td.textContent = '';}
             } else if(key.includes('edit')){

@@ -177,7 +177,7 @@ class VendorAPI:
 
     def delete_contact(self, contact):
         to_delete = Contacts(**contact)
-        result = self.repo.delete(to_delete)
+        result = self.repo.delete(to_delete, Contacts)
         if result:
             return {'result': True}
 
