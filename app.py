@@ -2,6 +2,7 @@ import webview
 from screeninfo import get_monitors
 from webview.menu import Menu, MenuAction
 from assets.api.config_api import ConfigAPI
+from assets.api.tasks_api import TasksApi
 from assets.api.vendor_api import VendorAPI
 
 
@@ -9,6 +10,8 @@ class AppAPI:
     def __init__(self):
         self.config = ConfigAPI()
         self.vendor = VendorAPI(self.config)
+        self.task = TasksApi(self.config)
+
     def close_app(self) -> None:
         webview.windows[0].destroy()
 

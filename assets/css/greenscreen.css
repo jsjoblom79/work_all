@@ -288,9 +288,45 @@ small, .gs-muted {
 .gs-statusbar__warn  { color: var(--gs-warning); }
 .gs-statusbar__error { color: var(--gs-danger);  }
 
+.gs-stat-row {
+  display: flex;
+  justify-content: space-between;
+  margin: 8px 0;
+  font-size: 14px;
+}
+
+.gs-stat-label {
+  color: #33ff33;
+}
+
+.gs-stat-value {
+  color: #44ffff;
+  font-weight: bold;
+}
 /* ============================================================
    PANELS & WINDOWS
    ============================================================ */
+.gs-dashboard-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+.gs-dashboard-box {
+  border: 2px solid var(--gs-primary);
+  padding: 12px;
+  background: transparent;
+}
+
+.gs-dashboard-box h2 {
+  font-size: 14px;
+  margin: 0 0 12px 0;
+  text-transform: uppercase;
+  border-bottom: 1px solid var(--gs-info);
+  padding-bottom: 6px;
+  color: var(--gs-info);
+}
 .gs-panel {
   background: var(--gs-bg-raised);
   border: var(--gs-border-width) solid var(--gs-border);

@@ -5,6 +5,7 @@ import displayVendorContacts from "/assets/js/sections/vendors/contacts.js";
 import displayProductsWindow from "/assets/js/sections/vendors/products.js";
 import displayNotesWindow from "/assets/js/sections/vendors/notes.js";
 import displayInvoiceWindow from "/assets/js/sections/vendors/invoices.js";
+import displayTaskScreen from "/assets/js/sections/tasks/tasks.js";
 
 // This variable needs to be available globally within this
 let main;
@@ -34,7 +35,10 @@ async function VendorNavigation(){
             main.appendElements(vendList, vendAdd);
 }
 
-
+async function TaskNavigation() {
+    const taskWin = await displayTaskScreen();
+    main.appendElements(taskWin);
+}
 
 
 
@@ -49,6 +53,7 @@ async function navigate(location){
         case "systems":
             break;
         case "tasks":
+            await TaskNavigation();
             break;
         case "staff":
             break;
