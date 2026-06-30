@@ -7,6 +7,7 @@ import displayButton from "/assets/js/components/button.js";
 import displayTextAreaField from "/assets/js/components/textareaField.js";
 import displayAlert from "/assets/js/components/alertMessage.js";
 import displayTables from "/assets/js/components/tableDisplay.js";
+import displayTaskDetail from "/assets/js/sections/tasks/task_detail.js";
 
 
 let addTaskWin;
@@ -67,5 +68,10 @@ export async function displayAllTasksWindow(){
         });
         taskTable.refresh(allTasks);
     };
+    taskTable.addEventListener('rowselect', async (e) =>{
+       allTaskWin.replaceChildren();
+       const taskDetail = await displayTaskDetail(e.detail);
+       allTaskWin.winBody.append(taskDetail);
+    });
     return allTaskWin;
 }

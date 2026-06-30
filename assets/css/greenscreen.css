@@ -392,6 +392,12 @@ small, .gs-muted {
 }
 .gs-window__btn:hover { color: var(--gs-glow); }
 
+.gs-button-group {
+  display: flex;
+  gap: 8px;
+  margin-top: 16px;
+  justify-content: space-between;
+}
 .gs-window__body {
   padding: 1rem 1.2rem;
 }
