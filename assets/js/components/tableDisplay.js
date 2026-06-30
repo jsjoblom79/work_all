@@ -62,7 +62,14 @@ export default async function displayTables(tableId, headerArray, dataArray, fil
             } else if(typeof data[key] === 'boolean'){
                 if(data[key]){ td.textContent = 'X';} else { td.textContent = '';}
             } else if(key.includes('edit')){
-                td.append(data[key]);
+                if(Array.isArray(data[key])){
+                    data[key].forEach(item => {
+                        td.append(item);
+                    })
+                } else {
+                   td.append(data[key]);
+                }
+
             } else {
                  td.textContent = data[key];
             }

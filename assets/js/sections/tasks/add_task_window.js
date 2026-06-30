@@ -46,6 +46,16 @@ export default async function displayAddTaskWindow(){
 export async function displayAllTasksWindow(){
     allTaskWin = displayWindow('All Tasks', true, false);
     const allTasks = await window.pywebview.api.task.get_all_tasks();
+    allTasks.forEach(task => {
+       task['edit'] = [
+           displayButton('complete', ['gs-btn--sm', 'gs-btn--primary'], (e) => {
+               console.log(`The task name is: ${task.title}`);
+           }),
+           displayButton('delete', ['gs-btn--sm', 'gs-btn--danger'], (e) => {
+
+           })
+       ];
+    });
     const taskTable = await displayTables('all-tasks',['Title', 'Description', 'edit'],allTasks,['title', 'description','edit']);
 
     allTaskWin.addContent(taskTable);
