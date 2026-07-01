@@ -2,7 +2,7 @@
 
 import displayDashboardGrid, {displayDashboardBox} from "/assets/js/components/dashboard_grid.js";
 import displayAddTaskWindow, {displayAllTasksWindow} from "/assets/js/sections/tasks/add_task_window.js";
-import displayTaskDetail from "/assets/js/sections/tasks/task_detail.js";
+import displayTaskDetail, {displayTaskTimer} from "/assets/js/sections/tasks/task_detail.js";
 
 export default async function displayTaskScreen(){
     const mainWin = document.createElement('div');
@@ -17,8 +17,17 @@ export default async function displayTaskScreen(){
     const AddTaskWindow = await displayAddTaskWindow();
 
     const TaskListWindow = await displayAllTasksWindow();
-
+    TaskListWindow.addEventListener('taskselected', async (e) => {
+        const taskDetailWin = await displayTaskDetail(e.detail);
+        const timer = await displayTaskTimer(e.detail);
+        mainWin.replaceChildren();
+        mainWin.append(taskDetailWin, timer);
+    })
 
     mainWin.append(dashboard, AddTaskWindow, TaskListWindow);
     return mainWin;
+}
+
+export async function displayTaskDetailScreens(){
+
 }

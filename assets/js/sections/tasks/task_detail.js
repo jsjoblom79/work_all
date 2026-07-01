@@ -19,9 +19,9 @@ export default async function displayTaskDetail(task){
     const notes = await window.pywebview.api.task.get_task_notes(task.id);
     const mainWin = document.createElement('div');
 
-    taskDetailWin = displayTaskInformation(task);
+    taskDetailWin = await displayTaskInformation(task);
     taskDashboard = displayDashboardGrid();
-    taskTimer = displayTaskTimer(task);
+    taskTimer = await displayTaskTimer(task);
     taskDashboard.addElement(taskTimer);
     mainWin.append(taskDetailWin);
 
@@ -33,14 +33,14 @@ export async function displayTaskInformation(task, time){
     const taskWin = displayWindow(task.title,true, false);
 
     const taskTitle = await displayField('Title','task-title', 'text');
-    const taskDescription = await displayTextAreaField('Description',3,'task-detail');
+    const taskDescription = await displayTextAreaField('Description',3,'task-description');
     const taskCreateDate = await displayField('Create Date', 'task-create_date', 'date');
     const taskFollowupDate = await displayField('Follow Up', 'task-followup', 'date');
     const taskLastWorked = await displayField('Last Worked', 'task-last_followup', 'date');
     const taskCompleted = await displayField('Completed', 'task-is_completed', 'checkbox');
 
     const taskSaveBtn = await displayButton('Save',['gs-btn--primary'], () => {});
-    const taskTotalTime = displayText(`Time Worked: ${time}`,'h1');
+    const taskTotalTime = displayText(`Time Worked: ${time}`,'h3');
 
     const fieldList = [taskTitle, taskDescription, taskCreateDate, taskFollowupDate, taskLastWorked, taskCompleted];
 
@@ -62,6 +62,7 @@ export async function displayTaskInformation(task, time){
         }
 
     });
+
     return taskWin;
 }
 

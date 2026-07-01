@@ -429,6 +429,8 @@ small, .gs-muted {
   text-shadow: 0 0 5px rgba(51, 255, 51, 0.35);
   transition: background 0.1s, color 0.1s, text-shadow 0.1s, box-shadow 0.1s;
   margin-right: 10px;
+  max-width: 150px;
+  max-height: 35px;
 }
 
 .gs-btn:hover,
@@ -522,6 +524,9 @@ small, .gs-muted {
 .gs-textarea::placeholder {
   color: var(--gs-dim);
   text-shadow: none;
+}
+input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(73%) sepia(53%) saturate(1485%) hue-rotate(74deg) brightness(114%) contrast(124%);
 }
 
 .gs-select {

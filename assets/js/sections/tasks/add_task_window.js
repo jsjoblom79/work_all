@@ -69,9 +69,9 @@ export async function displayAllTasksWindow(){
         taskTable.refresh(allTasks);
     };
     taskTable.addEventListener('rowselect', async (e) =>{
-       allTaskWin.replaceChildren();
-       const taskDetail = await displayTaskDetail(e.detail);
-       allTaskWin.winBody.append(taskDetail);
+        allTaskWin.dispatchEvent(new CustomEvent('taskselected', {detail: e.detail}));
     });
+
+    allTaskWin.taskDetail = () => {}
     return allTaskWin;
 }
