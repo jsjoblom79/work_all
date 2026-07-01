@@ -19,9 +19,8 @@ export default async function displayTaskScreen(){
     const TaskListWindow = await displayAllTasksWindow();
     TaskListWindow.addEventListener('taskselected', async (e) => {
         const taskDetailWin = await displayTaskDetail(e.detail);
-        const timer = await displayTaskTimer(e.detail);
         mainWin.replaceChildren();
-        mainWin.append(taskDetailWin, timer);
+        mainWin.append(taskDetailWin);
     })
 
     mainWin.append(dashboard, AddTaskWindow, TaskListWindow);

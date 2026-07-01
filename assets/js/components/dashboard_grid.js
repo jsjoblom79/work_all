@@ -9,7 +9,7 @@ export default function displayDashboardGrid(){
     return dashboard;
 }
 
-export function displayDashboardBox(title, data){
+export function displayDashboardBox(title, data=null){
     const box = document.createElement('div');
     box.classList.add('gs-dashboard-box');
 
@@ -17,7 +17,8 @@ export function displayDashboardBox(title, data){
     header.textContent = title;
     box.append(header);
 
-    data.forEach(item => {
+    if(data !== null){
+       data.forEach(item => {
        const row = document.createElement('div');
        row.classList.add('gs-stat-row');
        const label = document.createElement('span');
@@ -29,6 +30,14 @@ export function displayDashboardBox(title, data){
        row.append(label, stat);
        box.append(row);
     });
+    }
+
+    box.AddContent = (...element) => {
+        box.append(...element);
+    }
+    box.removeContent = () => {
+        box.replaceChildren();
+    }
 
     return box;
 }

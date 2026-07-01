@@ -7,12 +7,14 @@ import displayButton from "/assets/js/components/button.js";
 import displayText from "/assets/js/components/display_text.js";
 import displayTwoFields, {displayThreeFields} from "/assets/js/components/displayMultipleFields.js";
 import displayTimer from "/assets/js/components/display_timer.js";
-import displayDashboardGrid from "/assets/js/components/dashboard_grid.js";
+import displayDashboardGrid, {displayDashboardBox} from "/assets/js/components/dashboard_grid.js";
 import {returnISODate} from "/assets/js/helper/helper_functions.js";
+import displayTables from "/assets/js/components/tableDisplay.js";
+import displayAlert from "/assets/js/components/alertMessage.js";
 
 let taskDetailWin;
 let taskDashboard;
-let taskTimer;
+let noteListWin;
 
 export default async function displayTaskDetail(task){
     const taskTime = await window.pywebview.api.task.get_tracked_time_by_task(task.id);
@@ -21,9 +23,11 @@ export default async function displayTaskDetail(task){
 
     taskDetailWin = await displayTaskInformation(task);
     taskDashboard = displayDashboardGrid();
-    taskTimer = await displayTaskTimer(task);
-    taskDashboard.addElement(taskTimer);
-    mainWin.append(taskDetailWin);
+    const taskTimer = await displayTaskTimer(task);
+    const taskAddNote = await displayAddtaskNotes(task);
+    taskDashboard.addElements(taskTimer, taskAddNote);
+    noteListWin = await displayTaskNotes(notes, task.id);
+    mainWin.append(taskDetailWin, taskDashboard, noteListWin);
 
     return mainWin;
 }
@@ -67,9 +71,11 @@ export async function displayTaskInformation(task, time){
 }
 
 export async function displayTaskTimer(task){
-    let timerDisplay;
+    let timerRunning = false;
     const startButton = displayButton('start', ['gs-btn--primary', 'gs-btn--sm'],() => {
-
+       if(!timerRunning) {
+           timerDisplay.time = 
+       }
     });
     const resetButton = displayButton('reset', ['gs-btn--primary', 'gs-btn--sm'],() => {
         timerDisplay.resetTimer();
@@ -78,7 +84,41 @@ export async function displayTaskTimer(task){
         timerDisplay.resetTimer();
     });
 
-    timerDisplay = await displayTimer('Task Time',[startButton, resetButton, stopButton]);
+    const timerDisplay = await displayTimer('Task Time',[startButton, resetButton, stopButton]);
 
     return timerDisplay;
+}
+
+export async function displayAddtaskNotes(task){
+    const noteBox = displayDashboardBox('Add Notes');
+    const notes = await displayTextAreaField('Note',3,'task-note')
+    const addBtn = displayButton('Add',['gs-btn--primary'], async() => {
+        let newNote = {
+            'note': notes.input.value,
+            'task_id': task.id
+        }
+        const results = await window.pywebview.api.task.add_note(newNote);
+        if(results.result){
+            noteBox.append(displayAlert("Note Added. ", 'success'));
+            notes.input.value = null;
+            noteListWin.refresh();
+        } else {
+            noteBox.append(displayAlert('Error adding note. ', 'error'));
+        }
+    });
+
+    noteBox.AddContent(notes,addBtn);
+    return noteBox
+}
+
+export async function displayTaskNotes(notes, taskId){
+    noteListWin = displayWindow('Notes',true, true);
+    const noteList = await displayTables('task-note_list',['Date', 'Note'],notes,['create_date','note']);
+    noteListWin.winBody.append(noteList);
+
+    noteListWin.refresh = async () => {
+        notes = await window.pywebview.api.task.get_task_notes(taskId);
+        noteList.refresh(notes);
+    }
+    return noteListWin;
 }
