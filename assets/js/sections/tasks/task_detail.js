@@ -72,20 +72,51 @@ export async function displayTaskInformation(task, time){
 
 export async function displayTaskTimer(task){
     let timerRunning = false;
-    const startButton = displayButton('start', ['gs-btn--primary', 'gs-btn--sm'],() => {
+    let timerSeconds = 0 ;
+    let timerInterval = null;
+    let tracker;
+    const startButton = displayButton('start', ['gs-btn--primary', 'gs-btn--sm'],async() => {
+        console.log('started time');
        if(!timerRunning) {
-           timerDisplay.time = 
+           timerRunning = true;
+           timerInterval = setInterval(() => {
+               timerSeconds++;
+               timerDisplay.updateTimer(formatTime(timerSeconds));
+           }, 1000);
+
+          tracker = await window.pywebview.api.task.add_time_tracked({
+              'task_id': task.id
+          });
        }
     });
     const resetButton = displayButton('reset', ['gs-btn--primary', 'gs-btn--sm'],() => {
+        clearInterval(timerInterval);
+        timerSeconds = 0;
+        timerRunning = false;
         timerDisplay.resetTimer();
     });
-    const stopButton = displayButton('stop', ['gs-btn--primary', 'gs-btn--sm'],() => {
-        timerDisplay.resetTimer();
+    const stopButton = displayButton('stop', ['gs-btn--primary', 'gs-btn--sm'],async() => {
+        console.log('ended timer');
+        if(timerRunning){
+            const trackedTime = tracker.result;
+
+            const results = await window.pywebview.api.task.update_time_tracked(task.id);
+            if(results.result){
+                timerSeconds = 0;
+                timerRunning = false;
+                timerDisplay.resetTimer();
+            }
+        }
     });
 
     const timerDisplay = await displayTimer('Task Time',[startButton, resetButton, stopButton]);
 
+    const formatTime = (seconds) => {
+        const hours = Math.floor(seconds / 3600);
+        const minutes = Math.floor((seconds % 3600) / 60);
+        const secs = seconds % 60;
+        return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+    }
     return timerDisplay;
 }
 

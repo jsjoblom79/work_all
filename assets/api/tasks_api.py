@@ -2,6 +2,7 @@ from sqlalchemy import create_engine, inspect, select, func
 from sqlalchemy.orm import sessionmaker, scoped_session
 from assets.models.task_models import Tasks, TimeTracking, Notes, Base
 from assets.repositories.task_repo import TaskRepo
+from datetime import datetime
 
 class TasksApi:
     def __init__(self, config):
@@ -33,21 +34,24 @@ class TasksApi:
         return [note.to_dict() for note in notes]
 
     def get_tracked_time_by_task(self, task_id):
-        stmt = self.db.query(TimeTracking).where(TimeTracking.task_id == task_id)
-        results = self.db.execute(stmt).all()
+        stmt = select(TimeTracking).where(TimeTracking.task_id == task_id)
+        results = self.db.scalars(stmt).all()
         total_time = 0
         for time in results:
-            time_instance = time.end_time - time.start_time
-            total_time += time_instance
+            if time.end_time != None:
+                time_instance = time.end_time - time.start_time
+                total_time += time_instance
 
         return total_time
 
     def get_all_tracked_times(self):
-        tracked_times =  self.db.query(TimeTracking).all()
+        stmt = select(TimeTracking)
+        tracked_times =  self.db.scalars(stmt).all()
         total_time = 0
         for time in tracked_times:
-            time_instance = time.end_time - time.start_time
-            total_time += time_instance
+            if time.end_time != None:
+                time_instance = time.end_time - time.start_time
+                total_time += time_instance
 
         return total_time
 
@@ -91,8 +95,10 @@ class TasksApi:
             return {'result': result[0], 'time_tracking': result[1]}
 
     def update_time_tracked(self, id):
-        time_tracked = self.db.query(TimeTracking).filter_by(id=id).first()
-        time_tracked.end_time = func.now()
+        stmt = select(TimeTracking).where(TimeTracking.task_id == id, TimeTracking.end_time == None)
+        time_tracked = self.db.scalars(stmt)
+        print(time_tracked)
+        time_tracked.end_time = datetime.now()
         result = self.repo.update(time_tracked)
         if result[0]:
             return {'result': result[0], 'time_tracked': result[1].to_dict()}
