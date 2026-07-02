@@ -9,7 +9,6 @@ export default async function displayTaskScreen(){
 
     const dashboard = displayDashboardGrid();
     const taskInfo = await window.pywebview.api.task.get_task_stats();
-
     const box1 = await displayDashboardBox("Tasks Info", taskInfo);
     const box2 = await displayDashboardBox("Follow Up", []);
     dashboard.addElements(box1, box2);

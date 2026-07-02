@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Optional
 
 from sqlalchemy import Integer, Text, DateTime, Boolean, text, ForeignKey, func
@@ -56,7 +56,7 @@ class TimeTracking(Base):
     __tablename__ = 'time_tracking'
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     task_id: Mapped[int] = mapped_column(ForeignKey('tasks.id'), nullable=False)
-    start_time: Mapped[datetime] = mapped_column(DateTime, nullable=False, default=func.now())
+    start_time: Mapped[datetime] = mapped_column(DateTime, nullable=False, default=datetime.now())
     end_time: Mapped[Optional[datetime]] = mapped_column(DateTime)
 
     task: Mapped['Tasks'] = relationship('Tasks', back_populates='time_tracking')

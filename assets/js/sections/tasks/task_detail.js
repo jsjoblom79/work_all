@@ -21,7 +21,7 @@ export default async function displayTaskDetail(task){
     const notes = await window.pywebview.api.task.get_task_notes(task.id);
     const mainWin = document.createElement('div');
 
-    taskDetailWin = await displayTaskInformation(task);
+    taskDetailWin = await displayTaskInformation(task, taskTime);
     taskDashboard = displayDashboardGrid();
     const taskTimer = await displayTaskTimer(task);
     const taskAddNote = await displayAddtaskNotes(task);
@@ -44,7 +44,7 @@ export async function displayTaskInformation(task, time){
     const taskCompleted = await displayField('Completed', 'task-is_completed', 'checkbox');
 
     const taskSaveBtn = await displayButton('Save',['gs-btn--primary'], () => {});
-    const taskTotalTime = displayText(`Time Worked: ${time}`,'h3');
+    const taskTotalTime = displayText(`Time Worked: ${time.taskTime}`,'h3');
 
     const fieldList = [taskTitle, taskDescription, taskCreateDate, taskFollowupDate, taskLastWorked, taskCompleted];
 
@@ -96,15 +96,16 @@ export async function displayTaskTimer(task){
         timerDisplay.resetTimer();
     });
     const stopButton = displayButton('stop', ['gs-btn--primary', 'gs-btn--sm'],async() => {
-        console.log('ended timer');
+
         if(timerRunning){
             const trackedTime = tracker.result;
 
             const results = await window.pywebview.api.task.update_time_tracked(task.id);
             if(results.result){
+                clearInterval(timerInterval)
+                timerDisplay.resetTimer();
                 timerSeconds = 0;
                 timerRunning = false;
-                timerDisplay.resetTimer();
             }
         }
     });

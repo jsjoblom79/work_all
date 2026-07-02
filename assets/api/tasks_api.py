@@ -2,7 +2,7 @@ from sqlalchemy import create_engine, inspect, select, func
 from sqlalchemy.orm import sessionmaker, scoped_session
 from assets.models.task_models import Tasks, TimeTracking, Notes, Base
 from assets.repositories.task_repo import TaskRepo
-from datetime import datetime
+from datetime import datetime, timedelta
 
 class TasksApi:
     def __init__(self, config):
@@ -36,36 +36,36 @@ class TasksApi:
     def get_tracked_time_by_task(self, task_id):
         stmt = select(TimeTracking).where(TimeTracking.task_id == task_id)
         results = self.db.scalars(stmt).all()
-        total_time = 0
+        duration = timedelta()
         for time in results:
             if time.end_time != None:
-                time_instance = time.end_time - time.start_time
-                total_time += time_instance
+                duration += time.end_time - time.start_time
 
-        return total_time
+        total_duration = str(duration).split('.')[0]
+        return {'taskTime': total_duration}
 
     def get_all_tracked_times(self):
         stmt = select(TimeTracking)
         tracked_times =  self.db.scalars(stmt).all()
-        total_time = 0
+        duration=timedelta()
         for time in tracked_times:
             if time.end_time != None:
-                time_instance = time.end_time - time.start_time
-                total_time += time_instance
-
-        return total_time
+                duration += time.end_time - time.start_time
+        total_duration = str(duration).split('.')[0]
+        print(total_duration)
+        return {'allTime': total_duration }
 
     def get_task_stats(self):
         tasks = self.db.query(Tasks).all()
         completed_tasks = 0
-
+        trackedTime = self.get_all_tracked_times()
         for task in tasks:
             if task.is_complete:
                 completed_tasks += 1
         return [
             {'key': 'Total Tasks', 'value': len(tasks)},
             {'key': 'Completed Tasks', 'value': completed_tasks},
-            { 'key': 'Total Time Spent', 'value': self.get_all_tracked_times()}
+            { 'key': 'Total Time Spent', 'value': trackedTime['allTime']}
         ]
 
     def add_task(self, task):
@@ -96,8 +96,8 @@ class TasksApi:
 
     def update_time_tracked(self, id):
         stmt = select(TimeTracking).where(TimeTracking.task_id == id, TimeTracking.end_time == None)
-        time_tracked = self.db.scalars(stmt)
-        print(time_tracked)
+        time_tracked = self.db.scalars(stmt).one_or_none()
+        print(time_tracked.start_time)
         time_tracked.end_time = datetime.now()
         result = self.repo.update(time_tracked)
         if result[0]:

@@ -43,15 +43,15 @@ export default async function displayTimer(title, buttonArray = []){
 
     div.append(outerDiv);
 
-    div.updateTimer = (time) => {
+    div.updateTimer = async (time) => {
         timerSpan.textContent = time;
     };
 
-    div.resetTimer = () => {
+    div.resetTimer = async () => {
         timerSpan.textContent = '00:00:00';
     };
 
-    div.stopTimer = () => {
+    div.stopTimer = async () => {
         timerSpan.textContent = '00:00:00';
     }
     return div;
