@@ -3,8 +3,11 @@
 export default async function displayField(name, id, type, initialValue=''){
     const div = document.createElement('div');
     div.classList.add('gs-field');
-
     const label = document.createElement('label');
+    if(type.includes('checkbox')){
+        div.style.textAlign = 'center';
+    }
+
     label.for = id;
     label.textContent = name;
 

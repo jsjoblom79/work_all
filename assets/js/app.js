@@ -6,6 +6,7 @@ import displayProductsWindow from "/assets/js/sections/vendors/products.js";
 import displayNotesWindow from "/assets/js/sections/vendors/notes.js";
 import displayInvoiceWindow from "/assets/js/sections/vendors/invoices.js";
 import displayTaskScreen from "/assets/js/sections/tasks/tasks.js";
+import displayMainWindow from "/assets/js/sections/main/main.js";
 
 // This variable needs to be available globally within this
 let main;
@@ -16,6 +17,7 @@ window.addEventListener('pywebviewready', async () =>{
     main.mainMenu.addEventListener('itemselect', (e) => {
         navigate(e.detail.location);
     });
+    await navigate('main');
 });
 
 async function VendorNavigation(){
@@ -40,12 +42,17 @@ async function TaskNavigation() {
     main.appendElements(taskWin);
 }
 
+async function MainNavigation(){
+    const mainPanel = displayMainWindow();
+    main.appendElement(mainPanel);
+}
 
 
 async function navigate(location){
     main.clearBody();
     switch(location.toLowerCase()){
         case "main":
+            await MainNavigation();
             break;
         case "vendors":
             await VendorNavigation();

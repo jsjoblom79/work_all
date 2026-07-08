@@ -314,7 +314,7 @@ small, .gs-muted {
 }
 
 .gs-dashboard-box {
-  border: 2px solid var(--gs-primary);
+  border: 1px solid var(--gs-primary);
   padding: 12px;
   background: transparent;
 }
@@ -432,7 +432,10 @@ small, .gs-muted {
   max-width: 150px;
   max-height: 35px;
 }
-
+.gs-btn-table {
+  padding: 0.15rem 0.35rem;
+  font-size: 0.7rem;
+}
 .gs-btn:hover,
 .gs-btn:focus {
   background: rgba(34, 204, 34, 0.12);
@@ -471,6 +474,78 @@ small, .gs-muted {
   text-shadow: 0 0 6px rgba(204, 34, 34, 0.5);
 }
 
+/* ── Outlined variants ──
+   Border + text share one colour via currentColor.
+   Hover fills the button with that colour and inverts the text. */
+.gs-btn--outline {
+  color: var(--gs-primary);
+  background: transparent;
+  border-color: currentColor;
+  text-shadow: 0 0 5px rgba(51, 255, 51, 0.35);
+}
+
+.gs-btn--outline-info    { color: var(--gs-info); }
+.gs-btn--outline-warning { color: var(--gs-warning); }
+.gs-btn--outline-danger  { color: var(--gs-danger); }
+
+.gs-btn--outline:hover,
+.gs-btn--outline:focus {
+  background: transparent;
+  border-color: currentColor;
+  box-shadow: 0 0 8px currentColor, inset 0 0 8px color-mix(in srgb, currentColor 25%, transparent);
+  text-shadow: 0 0 8px currentColor;
+  outline: none;
+}
+
+.gs-btn--outline:active {
+  box-shadow: 0 0 4px currentColor, inset 0 0 12px color-mix(in srgb, currentColor 40%, transparent);
+}
+
+.gs-btn--outline:disabled {
+  color: var(--gs-dim);
+  box-shadow: none;
+}
+
+/* ── Link-style button ──
+   A <button> that renders like an inline anchor (matches `a` styles). */
+.gs-btn--link {
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  padding: 0;
+  margin-right: 0;
+  max-width: none;
+  max-height: none;
+  color: var(--gs-info);
+  text-transform: none;
+  letter-spacing: normal;
+  font-size: inherit;
+  text-shadow: 0 0 6px rgba(34, 204, 204, 0.5);
+  cursor: pointer;
+}
+
+.gs-btn--link:hover,
+.gs-btn--link:focus {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  color: var(--gs-info-glow);
+  text-shadow: 0 0 10px rgba(34, 204, 204, 0.9);
+  text-decoration: underline;
+  outline: none;
+}
+
+.gs-btn--link:active {
+  background: transparent;
+  color: var(--gs-glow);
+}
+
+.gs-btn--link:disabled {
+  color: var(--gs-dim);
+  text-decoration: none;
+  text-shadow: none;
+}
+
 .gs-btn--sm { padding: 0.25rem 0.75rem; font-size: 0.8rem; }
 .gs-btn--lg { padding: 0.55rem 1.8rem; font-size: 1rem; }
 
@@ -480,6 +555,178 @@ small, .gs-muted {
   cursor: not-allowed;
   text-shadow: none;
   background: transparent;
+}
+
+/* ============================================================
+   DESKTOP ICONS (Windows-style icon grid)
+   ============================================================
+   Usage:
+     <div class="gs-icon-grid">
+       <button class="gs-icon">
+         <span class="gs-icon__glyph">▣</span>
+         <span class="gs-icon__label">My Files</span>
+       </button>
+       <button class="gs-icon gs-icon--selected">
+         <img class="gs-icon__img" src="disk.png" alt="">
+         <span class="gs-icon__label">Disk Utility</span>
+       </button>
+     </div>
+   ============================================================ */
+
+/* Container — auto-wrapping grid of fixed-size cells */
+.gs-icon-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+  gap: 0.5rem;
+  align-content: start;
+}
+
+/* Vertical column layout (like icons down the left of a desktop) */
+.gs-icon-grid--column {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.5rem;
+}
+.gs-icon-grid--column .gs-icon { width: 90px; }
+
+/* Single icon cell */
+.gs-icon {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.6rem 0.3rem 0.45rem;
+  background: transparent;
+  border: var(--gs-border-width) solid transparent;
+  border-radius: var(--gs-radius);
+  cursor: pointer;
+  font-family: var(--gs-font-mono);
+  text-align: center;
+  transition: background 0.1s, border-color 0.1s;
+  user-select: none;
+}
+
+/* Hover — faint raised highlight, like Windows hover tint */
+.gs-icon:hover {
+  background: rgba(34, 204, 34, 0.08);
+  border-color: var(--gs-border);
+}
+
+/* Keyboard focus */
+.gs-icon:focus-visible {
+  outline: none;
+  border-color: var(--gs-border-active);
+  background: rgba(34, 204, 34, 0.08);
+}
+
+/* Selected — translucent fill + dotted marquee, terminal-flavored */
+.gs-icon--selected,
+.gs-icon[aria-selected="true"] {
+  background: rgba(34, 204, 34, 0.15);
+  border: var(--gs-border-width) dotted var(--gs-glow);
+}
+
+.gs-icon--selected .gs-icon__label,
+.gs-icon[aria-selected="true"] .gs-icon__label {
+  color: var(--gs-glow);
+  text-shadow: 0 0 6px rgba(51, 255, 51, 0.6);
+}
+
+/* Disabled */
+.gs-icon:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+.gs-icon:disabled:hover {
+  background: transparent;
+  border-color: transparent;
+}
+
+/* ── Icon artwork: image ── */
+.gs-icon__img {
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+  image-rendering: pixelated;          /* keeps small bitmaps crisp/retro */
+  filter: drop-shadow(0 0 6px rgba(51, 255, 51, 0.35));
+}
+
+/* Optional: force any image into the green phosphor palette */
+.gs-icon__img--tint {
+  filter: grayscale(1) brightness(1.1) sepia(1)
+          hue-rotate(65deg) saturate(4)
+          drop-shadow(0 0 6px rgba(51, 255, 51, 0.35));
+}
+
+/* ── Icon artwork: text glyph (ASCII / emoji / box-drawing) ── */
+.gs-icon__glyph {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  font-family: var(--gs-font-display);
+  font-size: 2.4rem;
+  line-height: 1;
+  color: var(--gs-primary);
+  text-shadow: 0 0 8px rgba(51, 255, 51, 0.6);
+}
+
+.gs-icon:hover .gs-icon__glyph,
+.gs-icon--selected .gs-icon__glyph {
+  color: var(--gs-glow);
+  text-shadow: 0 0 12px rgba(51, 255, 51, 0.8);
+}
+
+/* Semantic glyph colors */
+.gs-icon__glyph--info    { color: var(--gs-info);    text-shadow: 0 0 8px rgba(34, 204, 204, 0.6); }
+.gs-icon__glyph--warning { color: var(--gs-warning); text-shadow: 0 0 8px rgba(204, 204, 0, 0.6); }
+.gs-icon__glyph--danger  { color: var(--gs-danger);  text-shadow: 0 0 8px rgba(204, 34, 34, 0.6); }
+
+/* ── Label ── */
+.gs-icon__label {
+  font-size: 0.78rem;
+  color: var(--gs-primary);
+  letter-spacing: 0.03em;
+  line-height: 1.25;
+  text-shadow: none;
+  max-width: 100%;
+  /* clamp to two lines like Windows does */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  word-break: break-word;
+}
+
+/* ── Size modifiers ── */
+.gs-icon--sm .gs-icon__img,
+.gs-icon--sm .gs-icon__glyph { width: 32px; height: 32px; font-size: 1.6rem; }
+.gs-icon--sm { padding: 0.4rem 0.25rem 0.35rem; }
+
+.gs-icon--lg .gs-icon__img,
+.gs-icon--lg .gs-icon__glyph { width: 64px; height: 64px; font-size: 3.2rem; }
+
+/* Optional notification badge pinned to icon corner */
+.gs-icon__wrap {
+  position: relative;
+  display: inline-flex;
+}
+.gs-icon__count {
+  position: absolute;
+  top: -4px;
+  right: -8px;
+  min-width: 16px;
+  padding: 0 4px;
+  font-size: 0.65rem;
+  line-height: 16px;
+  text-align: center;
+  color: var(--gs-bg);
+  background: var(--gs-glow);
+  border-radius: var(--gs-radius);
+  text-shadow: none;
+  box-shadow: 0 0 6px rgba(51, 255, 51, 0.6);
 }
 
 /* ============================================================

@@ -36,17 +36,43 @@ export default async function displayTaskDetail(task){
 export async function displayTaskInformation(task, time){
     const taskWin = displayWindow(task.title,true, false);
 
-    const taskTitle = await displayField('Title','task-title', 'text');
-    const taskDescription = await displayTextAreaField('Description',3,'task-description');
-    const taskCreateDate = await displayField('Create Date', 'task-create_date', 'date');
-    const taskFollowupDate = await displayField('Follow Up', 'task-followup', 'date');
-    const taskLastWorked = await displayField('Last Worked', 'task-last_followup', 'date');
-    const taskCompleted = await displayField('Completed', 'task-is_completed', 'checkbox');
-
-    const taskSaveBtn = await displayButton('Save',['gs-btn--primary'], () => {});
-    const taskTotalTime = displayText(`Time Worked: ${time.taskTime}`,'h3');
+    const taskTitle = await displayField('Title','task-title', 'text', task.title);
+    const taskDescription = await displayTextAreaField('Description',3,'task-description', task.description);
+    const taskCreateDate = await displayField('Create Date', 'task-create_date', 'date', returnISODate(task.create_date));
+    const taskFollowupDate = await displayField('Follow Up', 'task-followup_date', 'date', returnISODate(task.followup_date));
+    const taskLastWorked = await displayField('Last Worked', 'task-last_followup', 'date', returnISODate(task.last_followup));
+    const taskCompleted = await displayField('Completed', 'task-is_complete', 'checkbox', task.is_completed);
 
     const fieldList = [taskTitle, taskDescription, taskCreateDate, taskFollowupDate, taskLastWorked, taskCompleted];
+
+    const taskSaveBtn = await displayButton('Save',['gs-btn--primary'], async() => {
+        let nTask = {
+            'id': task.id
+        }
+        fieldList.forEach(field => {
+            const key = field.input.id.replace('task-','');
+            if(key.includes('date')){
+                nTask[key] = returnISODate(field.input.value);
+            } else if(key.includes('last_followup')) {
+                const date = new Date();
+                nTask[key] = returnISODate(date.toISOString());
+            } else if(key.includes('complete')){
+                nTask[key] = !!field.input.checked;
+            } else {
+                nTask[key] = field.input.value;
+            }
+
+        });
+        const results = await window.pywebview.api.task.update_task(nTask);
+        if(results.result){
+            taskWin.prepend(displayAlert('Task has been updated.', 'success'));
+        } else {
+            taskWin.prepend(displayAlert('Error updating task', 'error'));
+        }
+    });
+    const taskTotalTime = displayText(`Time Worked: ${time.taskTime}`,'h3');
+
+
 
     const line1 = displayTwoFields([taskTitle, taskCompleted]);
     const line3 = displayThreeFields([taskCreateDate, taskFollowupDate, taskLastWorked]);
@@ -55,17 +81,11 @@ export async function displayTaskInformation(task, time){
 
     taskWin.winBody.append(line1, taskDescription, line3, line4);
 
-    fieldList.forEach(field => {
-        const key = field.input.id.replace('task-','');
-        if(key.includes('date')){
-            field.input.value = returnISODate(task[key]);
-        } else if(key.includes('completed')) {
-            field.input.checked = !!task[key];
-        } else {
-            field.input.value = task[key];
-        }
+    taskWin.refresh = async() => {
+        const tTime = await window.pywebview.api.task.get_tracked_time_by_task(task.id);
+        taskTotalTime.setText(`Time Worked: ${tTime.taskTime}`);
+    }
 
-    });
 
     return taskWin;
 }
@@ -75,8 +95,8 @@ export async function displayTaskTimer(task){
     let timerSeconds = 0 ;
     let timerInterval = null;
     let tracker;
-    const startButton = displayButton('start', ['gs-btn--primary', 'gs-btn--sm'],async() => {
-        console.log('started time');
+
+    const startButton = displayButton('start', ['gs-btn--primary'],async() => {
        if(!timerRunning) {
            timerRunning = true;
            timerInterval = setInterval(() => {
@@ -84,18 +104,16 @@ export async function displayTaskTimer(task){
                timerDisplay.updateTimer(formatTime(timerSeconds));
            }, 1000);
 
-          tracker = await window.pywebview.api.task.add_time_tracked({
-              'task_id': task.id
-          });
+          tracker = await window.pywebview.api.task.add_time_tracked(task.id);
        }
     });
-    const resetButton = displayButton('reset', ['gs-btn--primary', 'gs-btn--sm'],() => {
+    const resetButton = displayButton('reset', ['gs-btn--primary'],() => {
         clearInterval(timerInterval);
         timerSeconds = 0;
         timerRunning = false;
         timerDisplay.resetTimer();
     });
-    const stopButton = displayButton('stop', ['gs-btn--primary', 'gs-btn--sm'],async() => {
+    const stopButton = displayButton('stop', ['gs-btn--primary'],async() => {
 
         if(timerRunning){
             const trackedTime = tracker.result;
@@ -106,6 +124,7 @@ export async function displayTaskTimer(task){
                 timerDisplay.resetTimer();
                 timerSeconds = 0;
                 timerRunning = false;
+                taskDetailWin.refresh();
             }
         }
     });

@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 from typing import Optional
 
 from sqlalchemy import Integer, Text, DateTime, Boolean, text, ForeignKey, func
@@ -20,8 +20,8 @@ class Tasks(Base):
     last_followup: Mapped[Optional[datetime]] = mapped_column(DateTime)
     is_complete: Mapped[Optional[bool]] = mapped_column(Boolean, nullable=False, server_default=text('0'))
 
-    notes: Mapped[list['Notes']] = relationship('Notes', back_populates='task')
-    time_tracking: Mapped[list['TimeTracking']] = relationship('TimeTracking', back_populates='task')
+    notes: Mapped[list['Notes']] = relationship('Notes', back_populates='task', cascade='all, delete-orphan')
+    time_tracking: Mapped[list['TimeTracking']] = relationship('TimeTracking', back_populates='task', cascade='all, delete-orphan')
 
     def to_dict(self):
         return {
@@ -32,7 +32,18 @@ class Tasks(Base):
             'followup_date': self.followup_date.isoformat() if self.followup_date else None,
             'last_followup': self.last_followup.isoformat() if self.last_followup else None,
             'is_complete': self.is_complete,
+            'time_tracking': self.get_all_task_duration(),
         }
+
+    def get_all_task_duration(self):
+        duration = timedelta()
+        for time in self.time_tracking:
+            if time.end_time is not None:
+                duration += time.end_time - time.start_time
+        if duration.total_seconds() > 0:
+            return str(duration).split('.')[0]
+        return None
+
 
 class Notes(Base):
     __tablename__ = 'notes'
@@ -67,4 +78,10 @@ class TimeTracking(Base):
             'start_time': self.start_time.isoformat() if self.start_time else None,
             'end_time': self.end_time.isoformat() if self.end_time else None,
             'task_id': self.task_id,
+            #'total_time': self.end_time - self.start_time,
         }
+
+    def get_task_duration(self):
+        duration = timedelta()
+        duration += self.end_time - self.start_time
+        return duration

@@ -17,3 +17,11 @@ export function returnISODate(dateString){
         return null;
     }
 }
+
+export const notifyStatsChanged = () => {
+    document.dispatchEvent(new CustomEvent('stats:changed'));
+}
+
+export const notifyLinkSelected = () => {
+    document.dispatchEvent(new CustomEvent('link:clicked'));
+}

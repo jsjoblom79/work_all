@@ -63,9 +63,13 @@ export default async function displayTables(tableId, headerArray, dataArray, fil
                 if(data[key]){ td.textContent = 'X';} else { td.textContent = '';}
             } else if(key.includes('edit')){
                 if(Array.isArray(data[key])){
+                    const btnDiv = document.createElement('div');
+                    btnDiv.style.display = 'flex';
+                    btnDiv.style.gap = '5px';
                     data[key].forEach(item => {
-                        td.append(item);
-                    })
+                        btnDiv.append(item);
+                    });
+                    td.append(btnDiv);
                 } else {
                    td.append(data[key]);
                 }
