@@ -185,7 +185,7 @@ def get_state_with_zip(zip):
         return ''
 
 # Directory Constants
-INPUT_DIR = "//nmeaf.org/files/IT_Processes/CRI/Dialer_File/input/"
+# INPUT_DIR = "//nmeaf.org/files/IT_Processes/CRI/Dialer_File/input/"
 OUTPUT_DIR = "//nmeaf.org/files/IT_Processes/CRI/Dialer_File/output/"
 
 current_date = date.today().strftime('%Y%m%d')
@@ -231,28 +231,29 @@ def parse_dos(v):
 
 
 if __name__ == '__main__':
+    pass
     # Create a list to contain all the dictionaries
-    print(f'The dialer input file should be located here {INPUT_DIR}')
-    result = input("Please enter yes/no to continue: ")
-    print(result)
-    if result.lower() == "yes":
-        master_files = []
-        current_file_name = None
-        with os.scandir(path=INPUT_DIR) as files:
-            for file in files:
-                current_file_name = file.name[0:-4]
-                
-                if not file.is_dir():
-                    print(f"processing {file.name}")
-                    dialer = DialerFile(file.path)
-                    dialer.read_dialer_file()
-                    master_files.append(dialer.records)
-                write_dialer_files(error_file, master_files, current_file_name)
-                master_files.clear()
-    else:
-        print('You have requested to stop.')
-        print('No file will be processed.\n')
-        print('Hit any key to exit\n')
-        exitResult = input()
+    # print(f'The dialer input file should be located here {INPUT_DIR}')
+    # result = input("Please enter yes/no to continue: ")
+    # print(result)
+    # if result.lower() == "yes":
+    #     master_files = []
+    #     current_file_name = None
+    #     with os.scandir(path=INPUT_DIR) as files:
+    #         for file in files:
+    #             current_file_name = file.name[0:-4]
+    #
+    #             if not file.is_dir():
+    #                 print(f"processing {file.name}")
+    #                 dialer = DialerFile(file.path)
+    #                 dialer.read_dialer_file()
+    #                 master_files.append(dialer.records)
+    #             write_dialer_files(error_file, master_files, current_file_name)
+    #             master_files.clear()
+    # else:
+    #     print('You have requested to stop.')
+    #     print('No file will be processed.\n')
+    #     print('Hit any key to exit\n')
+    #     exitResult = input()
         
 

@@ -2,6 +2,7 @@ import webview
 from screeninfo import get_monitors
 from webview.menu import Menu, MenuAction
 from assets.api.config_api import ConfigAPI
+from assets.api.main_api import MainAPI
 from assets.api.tasks_api import TasksApi
 from assets.api.vendor_api import VendorAPI
 
@@ -11,6 +12,7 @@ class AppAPI:
         self.config = ConfigAPI()
         self.vendor = VendorAPI(self.config)
         self.task = TasksApi(self.config)
+        self.main = MainAPI(self.config)
 
     def close_app(self) -> None:
         webview.windows[0].destroy()
@@ -18,6 +20,8 @@ class AppAPI:
     def print_window(self) -> None:
         webview.windows[0].evaluate_js('window.print();')
 
+    def list_plugins(self) -> None:
+        webview.windows[0].evaluate_js('window.print();')
 
 api = AppAPI()
 

@@ -1,0 +1,9 @@
+{
+  "name": "cri_dialer_file",
+  "label": "CRI Dialer",
+  "version": "1.0.0",
+  "image": "",
+  "glyph": "",
+  "entry_py": "backend.py",
+  "entry_js": "frontend.py"
+}

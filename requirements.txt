@@ -2,3 +2,4 @@ pywebview
 sqlalchemy
 sqlacodegen
 screeninfo
+requests

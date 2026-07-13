@@ -8,7 +8,26 @@ export default function displayMainWindow(){
     const iconGrid = displayIconGrid();
     panel.append(iconGrid);
 
-    iconGrid.addIcon(displayIcon("CRI Dialer", () =>{}, null,'/assets/images/icons/genesys_icon_256.png'));
+    const hiddenInput = document.createElement('input');
+    hiddenInput.type = "file";
+    hiddenInput.style.display = "none";
+    hiddenInput.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        const fileReader = new FileReader();
+
+        fileReader.onload = async(e) => {
+          const data = e.target.result;
+          const b64 = data.split(",", 2)[1];
+          const result = await window.pywebview.api.main.process_cri_file_upload(file.name, b64);
+        };
+
+        fileReader.readAsDataURL(file);
+    });
+
+    iconGrid.addIcon(displayIcon("CRI Dialer", () => {
+        hiddenInput.click();
+
+    }, null,'/assets/images/icons/genesys_icon_256.png'));
     iconGrid.addIcon(displayIcon('RPED Dialer', () => {},null,null,'☏'));
     return panel;
 }
