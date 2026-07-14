@@ -18,16 +18,23 @@ export default function displayMainWindow(){
         fileReader.onload = async(e) => {
           const data = e.target.result;
           const b64 = data.split(",", 2)[1];
-          const result = await window.pywebview.api.main.process_cri_file_upload(file.name, b64);
+          const bl = hiddenInput.dataset.businessLine;
+          const result = await window.pywebview.api.main.process_file_upload(file.name, b64, bl);
         };
 
         fileReader.readAsDataURL(file);
     });
 
     iconGrid.addIcon(displayIcon("CRI Dialer", () => {
+        hiddenInput.dataset.businessLine = 'CRI';
         hiddenInput.click();
 
     }, null,'/assets/images/icons/genesys_icon_256.png'));
-    iconGrid.addIcon(displayIcon('RPED Dialer', () => {},null,null,'☏'));
+
+    iconGrid.addIcon(displayIcon('RPED Dialer', () => {
+        hiddenInput.dataset.businessLine = 'RPED';
+        hiddenInput.click();
+
+    },null,null,'☏'));
     return panel;
 }

@@ -1,8 +1,4 @@
-""" 
-    This is the current dialer script used to convert files recieved from CRI
-    Common issues are comma's in fields specifically the Client Name and debtor name
-    fields. There are also typically additional fields that are not used.
-"""
+
 from pathlib import Path
 import os
 import requests

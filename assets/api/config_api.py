@@ -46,3 +46,18 @@ class ConfigAPI:
             url.append({"name": db['name'], "url": db["url"]})
 
         return url
+
+    def getDialerHeader(self, business_line):
+        """ Returns the header for the dialers """
+        dialerHeader = None
+        for header in self.config["dialer"]:
+            if header["business_line"] == business_line:
+                dialerHeader = header["header"]
+
+        return dialerHeader.split(',')
+
+    def getDialerOutputDirectory(self):
+        return self.config["dialer_output_directory"]
+
+    def getDialerArchiveDirectory(self):
+        return self.config["dialer_archive"]

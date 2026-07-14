@@ -37,5 +37,18 @@
       "name": "Staff",
       "url": "/html/staff.html"
     }
-  ]
+  ],
+  "dialer": [
+    {
+      "business_line": "CRI",
+      "header": "AccountNumber,DebtorName,StAddress1,City,State,Zip,Phone,DebtorTotalDue,DateOfReferral,DateofService,StatusCode,CollectorNumber,ClientNumber,ClientName,ZONE"
+    },
+    {
+      "business_line": "RPED",
+      "header": ""
+    }
+
+  ],
+  "dialer_output_directory": "//nmeaf.org/files/IT_Processes/CRI/Dialer_File/output/",
+  "dialer_archive": "//nmeaf.org/files/IT_Processes/CRI/Dialer_File/Archive/"
 }

@@ -1,3 +1,5 @@
+from pathlib import Path
+from datetime import date
 
 TIME_ZONE = {
     'AL': 'CST6CDT',
@@ -54,14 +56,73 @@ TIME_ZONE = {
 }
 
 class Dialer:
-    def __init__(self, iFileHeaderArray, oFileHeaderArray, data, filename):
-        self.IHeader = iFileHeaderArray
-        self.OHeader = oFileHeaderArray
+    def __init__(self, data, filename, config, business_line):
+        self.IHeader = None
+        self.OHeader = config.getDialerHeader(business_line)
+        self.output_folder = config.getDialerOutputDirectory()
+        self.archive_folder = config.getDialerArchiveDirectory()
         self.Data = data
         self.Filename = filename
+        self.Business_line = business_line
+        self.RecordArray = []
+        self.ErrorArray = []
 
+
+    def __write_files(self):
+        if self.Business_line == 'CRI':
+            text = ",".join([r.replace('RecordNumber', 'AccountNumber') for r in self.OHeader]) + '\n'
+
+            for record in self.RecordArray:
+                record['AccountNumber'] = record.pop('RecordNumber')
+                reordered_record = {key: record[key] for key in self.OHeader if key in record or key == 'RecordNumber'}
+                text += ','.join(reordered_record.values()) + '\n'
+
+            current_date = date.today().strftime('%Y%m%d')
+            Path(f"{self.output_folder}{self.Business_line}_{current_date}.csv").write_text(data=text)
+            Path(f"{self.archive_folder}{self.Filename}").write_text(data=text)
 
     def process_file(self):
+        lines = self.Data.splitlines()
+        self.IHeader = lines[0].split(',')
 
-        for line in self.Data:
-            pass
+        if self.IHeader:
+            r = 0
+            for line in lines[1:]:
+                records = line.split(',')
+                if(len(records) != len(self.IHeader)):
+                    self.ErrorArray.append({ 'error': records })
+                else:
+                    self.RecordArray.append(
+                        { self.IHeader[i]: records[i] for i in range(len(self.IHeader)) }
+                    )
+                    self.__prepare_for_output(self.RecordArray[r])
+                    if self.RecordArray[r]['ZONE'] is None:
+                        self.ErrorArray.append({ 'error': records })
+                        self.RecordArray.pop(r)
+                    r+=1
+
+            if len(self.RecordArray) > 0:
+                self.__write_files()
+
+
+
+    def __get_timezone(self, state):
+        return TIME_ZONE[state]
+
+    def __get_state_and_zip(self,state_and_zip):
+        fields = state_and_zip.split(' ')
+        return fields
+
+    def __prepare_for_output(self, record):
+        if len(record['StateandZip']) > 1:
+            state = self.__get_state_and_zip(record['StateandZip'])[0]
+            zip = self.__get_state_and_zip(record['StateandZip'])[1]
+
+            if state is None:
+                return
+
+            zone = self.__get_timezone(state.upper())
+            del record['StateandZip']
+            record['ZONE'] = zone
+            record['State'] = state
+            record['Zip'] = zip
