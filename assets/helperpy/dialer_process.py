@@ -1,5 +1,6 @@
 from pathlib import Path
 from datetime import date
+import requests
 
 TIME_ZONE = {
     'AL': 'CST6CDT',
@@ -67,6 +68,34 @@ class Dialer:
         self.RecordArray = []
         self.ErrorArray = []
 
+    def __get_state_with_zip(self, zip):
+        url = f'http://ziptasticAPI.com/{zip}'
+        try:
+
+            response = requests.get(url)
+            if response.status_code == 200:
+                response_dict = response.json()
+                try:
+                    return response_dict['state']
+                except KeyError:
+                    return ''
+        except Exception:
+            return ''
+
+    def __archive_file(self):
+
+        text = '\n'.join(line.rstrip('\r\n') for line in self.Data.splitlines() if line)
+        Path(self.archive_folder, self.Filename).write_text(data=text, newline='')
+
+    def __write_error_file(self):
+        text = ''
+        print(self.Data)
+        for record in self.ErrorArray:
+            text += ','.join(record['error']) + '\n'
+
+        current_date = date.today().strftime('%Y%m%d')
+        Path(f"{self.output_folder}ERROR_{self.Business_line}_{current_date}.csv").write_text(data=text)
+
 
     def __write_files(self):
         if self.Business_line == 'CRI':
@@ -79,7 +108,9 @@ class Dialer:
 
             current_date = date.today().strftime('%Y%m%d')
             Path(f"{self.output_folder}{self.Business_line}_{current_date}.csv").write_text(data=text)
-            Path(f"{self.archive_folder}{self.Filename}").write_text(data=text)
+            # Write the Error and Archive File.
+            self.__write_error_file()
+            self.__archive_file()
 
     def process_file(self):
         lines = self.Data.splitlines()
@@ -104,6 +135,7 @@ class Dialer:
             if len(self.RecordArray) > 0:
                 self.__write_files()
 
+        return {'result': True}
 
 
     def __get_timezone(self, state):

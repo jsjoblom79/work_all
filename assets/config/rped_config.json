@@ -1,0 +1,126 @@
+{
+  "input_format": "",
+  "output_format": "Last_Name,First_Name,School_ID,DOB,High_School_Attended,Hours_Completed,Certificate_or_Degree,Online_Hours,In_Person_Hours,College_GPA,Phone,Address,City,State,Zip",
+  "output_folder": "//nmeaf.org/files/IT_Processes/ENMU-RPED Grant/Caseworthy/",
+  "archive_folder": "//nmeaf.org/files/IT_Processes/ENMU-RPED Grant/Archive/",
+  "canonical_fields": [
+    "First_Name",
+    "Last_Name",
+    "DOB",
+    "High_School_Attended",
+    "Hours_Completed",
+    "Certificate_or_Degree",
+    "Online_Hours",
+    "In_Person_Hours",
+    "College_GPA",
+    "Address",
+    "City",
+    "State",
+    "Zip",
+    "Phone",
+    "Email",
+    "School_ID"
+  ],
+  "synonyms": {
+    "First_Name": [
+      "firstname",
+      "given_name",
+      "first",
+      "fname"
+    ],
+    "Last_Name": [
+      "lastname",
+      "surname",
+      "family_name",
+      "last",
+      "lname"
+    ],
+    "DOB": [
+      "date of birth",
+      "birthdate",
+      "birthday",
+      "birth"
+    ],
+    "High_School_Attended": [
+      "high school",
+      "high_school",
+      "high school name",
+      "school name",
+      "high_school_name",
+      "HS_NAME",
+      "hs name"
+    ],
+    "Hours_Completed": [
+      "hours",
+      "hours completed",
+      "time",
+      "completed time"
+    ],
+    "Certificate_or_Degree": [
+      "certificate",
+      "degree major",
+      "major",
+      "program"
+    ],
+    "Online_Hours": [
+      "hours",
+      "online",
+      "online time",
+      "time"
+    ],
+    "In_Person_Hours": [
+      "in person",
+      "hours",
+      "in person time"
+    ],
+    "College_GPA": [
+      "college gpa",
+      "gpa",
+      "grade point average",
+      "grade",
+      "school gpa"
+    ],
+    "address": [
+      "street_line_1",
+      "street line 1",
+      "addr",
+      "street",
+      "address_1"
+    ],
+    "city": [
+      "town",
+      "municipality"
+    ],
+    "state": [
+      "province",
+      "region",
+      "st"
+    ],
+    "zip": [
+      "zipcode",
+      "postal_code",
+      "postcode",
+      "zip_code"
+    ],
+    "phone": [
+      "phone_number",
+      "telephone",
+      "tel",
+      "mobile",
+      "cell"
+    ],
+    "email": [
+      "email_address",
+      "e_mail",
+      "mail",
+      "emailaddress"
+    ],
+    "School_ID": [
+      "school id",
+      "id",
+      "banner",
+      "banner id"
+    ]
+  }
+
+}
