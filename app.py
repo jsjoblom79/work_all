@@ -12,8 +12,11 @@ class AppAPI:
         self.config = ConfigAPI()
         self.vendor = VendorAPI(self.config)
         self.task = TasksApi(self.config)
+        self.window = None
         self.main = MainAPI(self.config)
 
+    def setWindow(self, window):
+        self.main.set_window(window)
     def close_app(self) -> None:
         webview.windows[0].destroy()
 
