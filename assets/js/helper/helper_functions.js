@@ -26,22 +26,3 @@ export const notifyLinkSelected = () => {
     document.dispatchEvent(new CustomEvent('link:clicked'));
 }
 
-function normalize(s) {
-    return s.toLowerCase().trim().replace(/[^a-z0-9]+/g, "_").replace(/^_|_$/g, "");
-}
-
-export function buildAliasIndex(synonyms, canonical){
-    let aliasToCanonical = {};
-    for (const field of canonical){
-        aliasToCanonical[normalize(field)] = field;
-    }
-    for (const [field, aliases] of Object.entries(synonyms || {})) {
-        for (const a of aliases) aliasToCanonical[normalize(a)] = field;
-    }
-
-    return aliasToCanonical;
-}
-
-export function suggest(column, aliasToCanon){
-    return aliasToCanon[normalize(column)] || "" ;
-}
