@@ -14,25 +14,36 @@ export default function displaySelectInput(options, id, event = null, name=null)
         label.textContent = name;
     }
     //verify options are arrays
-    const selOption = {textContent: 'Select an option to continue', value:'-1'};
-    if(Array.isArray(options)){
-        const firstOpt = document.createElement('option');
-        firstOpt.textContent = selOption.textContent;
-        firstOpt.value = selOption.value;
-        select.append(firstOpt);
 
-        for(const option of options){
-            const opt = document.createElement('option');
-            opt.textContent = option.name;
-            opt.value = option.id;
-            select.append(opt);
+    const defaultOption = options.map(opt => opt.id === -1);
+    const selOption = {textContent: 'Select an option to continue', value:'-1'};
+
+        if (Array.isArray(options)) {
+            const firstOpt = document.createElement('option');
+            if(defaultOption !== null){
+                firstOpt.textContent = defaultOption.textContent;
+                firstOpt.value = defaultOption.value;
+                select.append(firstOpt);
+            }
+
+
+            for (const option of options) {
+
+                const opt = document.createElement('option');
+                opt.selected = !!option.select;
+                opt.textContent = option.name;
+                opt.value = option.id;
+
+
+                select.append(opt);
+            }
+        } else {
+            const noOption = document.createElement('option');
+            noOption.textContent = 'Add an option to continue';
+            noOption.value = '-1';
+            select.append(noOption);
         }
-    } else {
-        const noOption = document.createElement('option');
-        noOption.textContent = 'Add an option to continue';
-        noOption.value = '-1';
-        select.append(noOption);
-    }
+
     if(event){
        select.addEventListener('change', event);
     }
@@ -44,4 +55,15 @@ export default function displaySelectInput(options, id, event = null, name=null)
 
     div.select = select;
     return div;
+}
+
+export function selectOption(text, value=null){
+    const option = document.createElement('option');
+    option.textContent = text;
+    if(value !== null){
+        option.value = value;
+    } else {
+        option.value = text;
+    }
+    return option;
 }

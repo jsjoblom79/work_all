@@ -47,35 +47,42 @@ export default async function displayTables(tableId, headerArray, dataArray, fil
 
         for (const key of resolveKeyOrder(data)) {
             const td = document.createElement('td');
-
-            if(key.includes('date') && data[key] != null){
-                const [year, month, day] = data[key].substring(0, 10).split('-');
-                td.textContent = `${month}/${day}/${year}`;//data[key].substring(0, 10);
-            } else if(key.includes('phone')){
-                const phone = data[key];
-                const prefix = phone.substring(0,3);
-                const id = phone.substring(3,6);
-                const postfix = phone.substring(6, 10);
-                td.innerHTML = `<a href="tel:+1${phone}" target="_blank">(${prefix}) ${id}-${postfix}</a>`;
-            } else if(key.includes('email')){
-                td.innerHTML = `<a href="mailto:${data[key]}" target="_blank">${data[key]}</a>`;
-            } else if(typeof data[key] === 'boolean'){
-                if(data[key]){ td.textContent = 'X';} else { td.textContent = '';}
-            } else if(key.includes('edit')){
-                if(Array.isArray(data[key])){
-                    const btnDiv = document.createElement('div');
-                    btnDiv.style.display = 'flex';
-                    btnDiv.style.gap = '5px';
-                    data[key].forEach(item => {
-                        btnDiv.append(item);
-                    });
-                    td.append(btnDiv);
-                } else {
-                   td.append(data[key]);
-                }
-
+            if(data[key] instanceof Object){
+                td.append(data[key]);
             } else {
-                 td.textContent = data[key];
+                if (key.includes('date') && data[key] != null) {
+                    const [year, month, day] = data[key].substring(0, 10).split('-');
+                    td.textContent = `${month}/${day}/${year}`;//data[key].substring(0, 10);
+                } else if (key.includes('phone')) {
+                    const phone = data[key];
+                    const prefix = phone.substring(0, 3);
+                    const id = phone.substring(3, 6);
+                    const postfix = phone.substring(6, 10);
+                    td.innerHTML = `<a href="tel:+1${phone}" target="_blank">(${prefix}) ${id}-${postfix}</a>`;
+                } else if (key.includes('email')) {
+                    td.innerHTML = `<a href="mailto:${data[key]}" target="_blank">${data[key]}</a>`;
+                } else if (typeof data[key] === 'boolean') {
+                    if (data[key]) {
+                        td.textContent = 'X';
+                    } else {
+                        td.textContent = '';
+                    }
+                } else if (key.includes('edit')) {
+                    if (Array.isArray(data[key])) {
+                        const btnDiv = document.createElement('div');
+                        btnDiv.style.display = 'flex';
+                        btnDiv.style.gap = '5px';
+                        data[key].forEach(item => {
+                            btnDiv.append(item);
+                        });
+                        td.append(btnDiv);
+                    } else {
+                        td.append(data[key]);
+                    }
+
+                } else {
+                    td.textContent = data[key];
+                }
             }
             tr.append(td);
         }

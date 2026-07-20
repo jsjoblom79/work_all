@@ -1,32 +1,36 @@
 "use strict";
 
-import {buildAliasIndex, suggest} from "/assets/js/helper/helper_functions.js";
-import displaySpan from "/assets/js/components/create_span.js";
-import displaySelectInput from "assets/js/components/selectInput.js";
 
-export default function mapAndRender(columns, header, alias){
+import displaySpan from "/assets/js/components/create_span.js";
+import displaySelectInput from "/assets/js/components/selectInput.js";
+import displayTables from "/assets/js/components/tableDisplay.js";
+
+export default async function mapAndRender(columns, header, alias){
     const canonAlias = buildAliasIndex(alias, columns);
-    const options = [`<option value="">- skip - </option>`]
-        .concat(columns.map(f => `<option value="${f}">${f}</option>`))
-        .join("");
+    const options = [{ 'id': '-1', 'name': "-skip-", 'select': true}]
+    columns.map(f => options.push({'id': f, 'name': f, 'select': false}));
 
     const rows = header.map((col, i) => {
+
         const guess = suggest(col, canonAlias);
         const tag = guess
             ? displaySpan('auto',['tag','auto'])
             : displaySpan('choose',['tag', 'none']);
-        options.replace(`value="${guess}"`, `value="${guess}" selected`);
-        const select = displaySelectInput(options,`${col}_${i}`)
-        return `<tr>
-                <td class="source">${col}</td>
-                <td>
 
-                </td>
-                <td>${tag}</td>
-                </tr>`;
-    }).join("");
+        options.map(rec =>
+            rec.id === guess ? {...rec, name: guess, select: true } : rec );
+        options.map(rec => rec.id === -1 ? {...rec, select: false }: rec);
 
-    return rows;
+        const select = displaySelectInput(options,`${col}_${i}`);
+        return {
+            "Source": col,
+            "options": select,
+            "Status": tag
+        };
+    });
+
+    return await displayTables("table_mapper",["Source", "Destination", "Status"],rows);
+
 }
 
 function normalize(s) {

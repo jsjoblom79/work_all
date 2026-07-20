@@ -55,18 +55,8 @@ export default function displayMainWindow(){
         const mappingFields = await window.pywebview.api.main.get_canon_synonyms();
 
 
-        panel.innerHTML = `<table> 
-        <thead>
-        <tr>
-        <th>Incoming Field</th>
-        <th>Mapped Filed</th>
-        <th>Status</th>
-        </tr>
-        </thead>
-        <tbody>
-        ${mapAndRender(mappingFields.canon, results.header, mappingFields.synonyms)} 
-        </tbody>
-        </table>`;
+        panel.append(await mapAndRender(mappingFields.canon, results.header, mappingFields.synonyms));
+
 
     }, null,null, '🧐'));
     const getData = (e) =>{

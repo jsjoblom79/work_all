@@ -164,6 +164,7 @@ export async function displayAddtaskNotes(task){
 
 export async function displayTaskNotes(notes, taskId){
     noteListWin = displayWindow('Notes',true, true);
+    console.log(notes);
     const noteList = await displayTables('task-note_list',['Date', 'Note'],notes,['create_date','note']);
     noteListWin.winBody.append(noteList);
 
