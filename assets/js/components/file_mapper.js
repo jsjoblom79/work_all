@@ -7,7 +7,7 @@ import displayTables from "/assets/js/components/tableDisplay.js";
 
 export default async function mapAndRender(columns, header, alias){
     const canonAlias = buildAliasIndex(alias, columns);
-    const options = [{ 'id': '-1', 'name': "-skip-", 'select': true}]
+    let options = [{ 'id': '-1', 'name': "-skip-", 'select': true}]
     columns.map(f => options.push({'id': f, 'name': f, 'select': false}));
 
     const rows = header.map((col, i) => {
@@ -17,14 +17,24 @@ export default async function mapAndRender(columns, header, alias){
             ? displaySpan('auto',['tag','auto'])
             : displaySpan('choose',['tag', 'none']);
 
-        options.map(rec =>
-            rec.id === guess ? {...rec, name: guess, select: true } : rec );
-        options.map(rec => rec.id === -1 ? {...rec, select: false }: rec);
+        const hasGuess = options.some(rec => rec.id === guess);
+
+        options = options.map(rec => {
+            if(hasGuess){
+                return rec.id === guess
+                    ? { ...rec, name: guess, select: true }
+                    : { ...rec, select: false };
+            } else {
+                return rec.id === '-1'
+                    ? { ...rec, select: true }
+                    : { ...rec, select: false };
+            }
+        });
 
         const select = displaySelectInput(options,`${col}_${i}`);
         return {
             "Source": col,
-            "options": select,
+            "destination": select,
             "Status": tag
         };
     });

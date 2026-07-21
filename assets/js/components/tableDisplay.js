@@ -28,12 +28,6 @@ export default async function displayTables(tableId, headerArray, dataArray, fil
         Array.from(tbody.rows).forEach(row => row.classList.remove('selected-row'));
     };
 
-
-    // Determine the ordered list of keys to render.
-    // If displayOrderArray is provided, use it as the canonical order (filtered
-    // to only keys that also appear in filterTableResultsArray when that list is
-    // non-empty). Otherwise fall back to filterTableResultsArray order, then
-    // finally natural object-key order.
     const resolveKeyOrder = (data) => {
         const filter = filterTableResultsArray.length ? filterTableResultsArray : null;
         if (filterTableResultsArray.length) {
@@ -125,6 +119,16 @@ export default async function displayTables(tableId, headerArray, dataArray, fil
         tableDiv.selectedRow = null;
     };
     tableDiv.getData = () => {
+        if(tableData.length == 0){
+            for(let i = 1; i < table.rows.length; i++){
+                const row = table.rows[i];
+                const id = row.cells[0].innerText.trim();
+                const sName = row.cells[1].querySelector("select");
+                const option = sName ? sName.value : null;
+                tableData.push({'id': id, 'destination': option});
+            }
+
+        }
         return tableData;
     };
     tableDiv.removeObject = (obj) => {

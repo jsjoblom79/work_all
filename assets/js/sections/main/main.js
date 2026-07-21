@@ -4,6 +4,7 @@
 import displayPanel, {displayIcon, displayIconGrid} from "/assets/js/components/panel.js";
 import displayAlert from "/assets/js/components/alertMessage.js";
 import mapAndRender from "/assets/js/components/file_mapper.js";
+import displayButton from "/assets/js/components/button.js";
 
 export default function displayMainWindow(){
     const panel = displayPanel('☏ Dialer Functions');
@@ -53,10 +54,16 @@ export default function displayMainWindow(){
     iconGrid.addIcon(displayIcon('TEST', async() => {
         const results = await window.pywebview.api.main.open_file();
         const mappingFields = await window.pywebview.api.main.get_canon_synonyms();
-
-
-        panel.append(await mapAndRender(mappingFields.canon, results.header, mappingFields.synonyms));
-
+        const renderedTable = await mapAndRender(mappingFields.canon, results.header, mappingFields.synonyms);
+        panel.append(renderedTable);
+        panel.append(await displayButton('Map',['gs-btn--primary'], () => {
+            const data = renderedTable.getData();
+            const mapping = {};
+            data.forEach(sel => {
+                mapping[sel.destination] = sel.id;
+            });
+            console.log(mapping);
+        }));
 
     }, null,null, '🧐'));
     const getData = (e) =>{

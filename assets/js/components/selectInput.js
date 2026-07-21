@@ -15,7 +15,7 @@ export default function displaySelectInput(options, id, event = null, name=null)
     }
     //verify options are arrays
 
-    const defaultOption = options.map(opt => opt.id === -1);
+    const defaultOption = options.map(opt => opt.id === '-1');
     const selOption = {textContent: 'Select an option to continue', value:'-1'};
 
         if (Array.isArray(options)) {
