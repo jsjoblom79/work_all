@@ -8,7 +8,9 @@ export default function displayPanel(title){
     header.textContent = title;
 
     section.append(header);
-
+    section.removeElement = (element) => {
+        section.removeChild(element);
+    }
     return section;
 }
 

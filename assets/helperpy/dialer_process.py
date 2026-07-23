@@ -1,6 +1,6 @@
 from pathlib import Path
 from datetime import date
-import requests
+import requests, json
 
 TIME_ZONE = {
     'AL': 'CST6CDT',
@@ -67,6 +67,8 @@ class Dialer:
         self.Business_line = business_line
         self.RecordArray = []
         self.ErrorArray = []
+        with open('./assets/config/state_area_codes.json') as file:
+            self.areacodes = json.load(file)
 
     def __get_state_with_zip(self, zip):
         url = f'http://ziptasticAPI.com/{zip}'
@@ -89,7 +91,6 @@ class Dialer:
 
     def __write_error_file(self):
         text = ''
-        print(self.Data)
         for record in self.ErrorArray:
             text += ','.join(record['error']) + '\n'
 
@@ -98,15 +99,18 @@ class Dialer:
 
 
     def __write_files(self):
-        if self.Business_line == 'CRI':
+        if self.Business_line == 'CRI' or self.Business_line == 'RPED':
             text = ",".join([r.replace('RecordNumber', 'AccountNumber') for r in self.OHeader]) + '\n'
 
             for record in self.RecordArray:
-                record['AccountNumber'] = record.pop('RecordNumber')
-                reordered_record = {key: record[key] for key in self.OHeader if key in record or key == 'RecordNumber'}
-                text += ','.join(reordered_record.values()) + '\n'
+                if 'RecordNumber' in record:
+                    record['AccountNumber'] = record.pop('RecordNumber')
+                else:
+                    reordered_record = {key: record[key] for key in self.OHeader if key in record or key == 'RecordNumber'}
+                    text += ','.join(reordered_record.values()) + '\n'
 
             current_date = date.today().strftime('%Y%m%d')
+            print(f"{self.output_folder}{self.Business_line}_{current_date}.csv")
             Path(f"{self.output_folder}{self.Business_line}_{current_date}.csv").write_text(data=text)
             # Write the Error and Archive File.
             self.__write_error_file()
@@ -120,20 +124,35 @@ class Dialer:
             r = 0
             for line in lines[1:]:
                 records = line.split(',')
+
                 if(len(records) != len(self.IHeader)):
+                    print("More Commas")
                     self.ErrorArray.append({ 'error': records })
                 else:
                     self.RecordArray.append(
                         { self.IHeader[i]: records[i] for i in range(len(self.IHeader)) }
                     )
                     self.__prepare_for_output(self.RecordArray[r])
-                    if self.RecordArray[r]['ZONE'] is None:
-                        self.ErrorArray.append({ 'error': records })
-                        self.RecordArray.pop(r)
+
+                    if 'ZONE' in self.RecordArray[r]:
+                        if self.RecordArray[r]['ZONE'] is None:
+                            self.ErrorArray.append({ 'error': records })
+                            self.RecordArray.pop(r)
                     r+=1
 
             if len(self.RecordArray) > 0:
+                for record in self.RecordArray:
+                    if 'ZONE' not in record:
+                        self.ErrorArray.append({'error': record})
+                        self.RecordArray.pop(self.RecordArray.index(record))
+
+                for record in self.RecordArray:
+                    if not record['Phone']:
+                        self.ErrorArray.append({'error': record})
+                        self.RecordArray.pop(self.RecordArray.index(record))
                 self.__write_files()
+
+
 
         return {'result': True}
 
@@ -146,15 +165,32 @@ class Dialer:
         return fields
 
     def __prepare_for_output(self, record):
-        if len(record['StateandZip']) > 1:
-            state = self.__get_state_and_zip(record['StateandZip'])[0]
-            zip = self.__get_state_and_zip(record['StateandZip'])[1]
+        if 'StateandZip' in record:
+            if len(record['StateandZip']) > 1:
+                state = self.__get_state_and_zip(record['StateandZip'])[0]
+                zip = self.__get_state_and_zip(record['StateandZip'])[1]
 
-            if state is None:
-                return
+                if state is None:
+                    phone = record['Phone']
+                    areacode = phone[0:3]
+                    for key, values in self.areacodes.items():
+                        if areacode in values:
+                            state = key
 
-            zone = self.__get_timezone(state.upper())
-            del record['StateandZip']
-            record['ZONE'] = zone
-            record['State'] = state
-            record['Zip'] = zip
+                zone = self.__get_timezone(state.upper())
+                del record['StateandZip']
+                record['ZONE'] = zone
+                record['State'] = state
+                record['Zip'] = zip
+
+        elif 'State' in record:
+            if record['State'] is not None and record['State'] != '':
+                record['ZONE'] = self.__get_timezone(record['State'])
+            else:
+                areacode = record['Phone'][0:3].strip()
+
+                for key, values in self.areacodes.items():
+                    if areacode:
+                        if int(areacode) in values:
+                            record['State'] = key
+                            record['ZONE'] = self.__get_timezone(key)

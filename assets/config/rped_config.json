@@ -4,8 +4,9 @@
   "output_folder": "//nmeaf.org/files/IT_Processes/ENMU-RPED Grant/Caseworthy/",
   "archive_folder": "//nmeaf.org/files/IT_Processes/ENMU-RPED Grant/Archive/",
   "canonical_fields": [
-    "First_Name",
     "Last_Name",
+    "First_Name",
+    "School_ID",
     "DOB",
     "High_School_Attended",
     "Hours_Completed",
@@ -13,13 +14,11 @@
     "Online_Hours",
     "In_Person_Hours",
     "College_GPA",
+    "Phone",
     "Address",
     "City",
     "State",
-    "Zip",
-    "Phone",
-    "Email",
-    "School_ID"
+    "Zip"
   ],
   "synonyms": {
     "First_Name": [
@@ -80,40 +79,39 @@
       "grade",
       "school gpa"
     ],
-    "address": [
+    "Address": [
       "street_line_1",
       "street line 1",
       "addr",
       "street",
-      "address_1"
+      "address_1",
+      "email",
+      "emailaddress"
     ],
-    "city": [
+    "City": [
       "town",
       "municipality"
     ],
-    "state": [
+    "State": [
       "province",
       "region",
       "st"
     ],
-    "zip": [
+    "Zip": [
       "zipcode",
       "postal_code",
       "postcode",
-      "zip_code"
+      "zip_code",
+      "Zip"
     ],
-    "phone": [
+    "Phone": [
       "phone_number",
       "telephone",
       "tel",
       "mobile",
-      "cell"
-    ],
-    "email": [
-      "email_address",
-      "e_mail",
-      "mail",
-      "emailaddress"
+      "cell",
+      "phone",
+      "phonenumber"
     ],
     "School_ID": [
       "school id",

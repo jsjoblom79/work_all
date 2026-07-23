@@ -19,18 +19,19 @@ export default function displayMainWindow(){
         const streamData = await getData(e);
 
         if(streamData !== null) {
+            let result
             switch (hiddenInput.dataset.businessLine) {
                 case "CRI":
-                    const result = await window.pywebview.api.main.process_file_upload(file.name, streamData, hiddenInput.dataset.businessLine);
-                    if (result.result) {
-                        panel.prepend(displayAlert(`File: ${file.name} processes. `, 'success'));
-                    }
+                    result = await window.pywebview.api.main.process_file_upload(file.name, streamData, hiddenInput.dataset.businessLine);
+
                     break;
                 case "RPED":
-                    if (await window.pywebview.api.main.process_rped_file(e.target.files[0].name, streamData)['result']) {
-                        console.log("passed");
-                    }
+                    result = await window.pywebview.api.main.process_rped_file(e.target.files[0].name, streamData, hiddenInput.dataset.businessLine);
+
             }
+            if (result.result) {
+                        panel.prepend(displayAlert(`File: ${file.name} processes. `, 'success'));
+                    }
         }
     });
 
@@ -46,26 +47,31 @@ export default function displayMainWindow(){
 
     },null,null,'☏'));
 
-    iconGrid.addIcon(displayIcon('CaseWorthy Upload', () => {
-        hiddenInput.dataset.businessLine = 'RPED';
-        hiddenInput.click();
-    }, null, null, '🗂️'));
-
-    iconGrid.addIcon(displayIcon('TEST', async() => {
+    iconGrid.addIcon(displayIcon('CaseWorth Upload', async() => {
         const results = await window.pywebview.api.main.open_file();
         const mappingFields = await window.pywebview.api.main.get_canon_synonyms();
         const renderedTable = await mapAndRender(mappingFields.canon, results.header, mappingFields.synonyms);
         panel.append(renderedTable);
-        panel.append(await displayButton('Map',['gs-btn--primary'], () => {
+        const mapBtn = await displayButton('Map',['gs-btn--primary'], async() => {
             const data = renderedTable.getData();
             const mapping = {};
             data.forEach(sel => {
-                mapping[sel.destination] = sel.id;
-            });
-            console.log(mapping);
-        }));
+                if(sel.destination !== '-1'){
+                    mapping[sel.destination] = sel.id;
+                }
 
-    }, null,null, '🧐'));
+            });
+            const result = await window.pywebview.api.main.write_file(mapping);
+            if(result.result){
+                panel.prepend(displayAlert(`${result.path} SAVED!`, 'success'));
+                panel.removeElement(renderedTable);
+                panel.removeElement(mapBtn);
+            }
+
+        });
+        panel.append(mapBtn);
+
+    }, null,null, '🗂️'));
     const getData = (e) =>{
         const file = e.target.files[0];
         return new Promise((resolve, reject) =>{

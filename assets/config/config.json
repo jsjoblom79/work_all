@@ -45,7 +45,7 @@
     },
     {
       "business_line": "RPED",
-      "header": ""
+      "header": "Last_Name,First_Name,School_ID,DOB,High_School_Attended,Hours_Completed,Certificate_or_Degree,Online_Hours,In_Person_Hours,College_GPA,Phone,Address,City,State,Zip,ZONE"
     }
 
   ],
