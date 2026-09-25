@@ -52,8 +52,8 @@ export async function displayAllTasksWindow(){
     const allTasks = await window.pywebview.api.task.get_all_tasks();
 
     allTasks.forEach(task => {
-       task['edit'] = [
-           displayButton('complete', ['gs-btn-table', 'gs-btn--primary'], async(e) => {
+
+           const compBtn = displayButton('complete', ['gs-btn-table', 'gs-btn--primary'], async(e) => {
                const curTask = task;
                console.log(curTask.title);
                e.stopPropagation();
@@ -68,8 +68,8 @@ export async function displayAllTasksWindow(){
                } else {
                    allTaskWin.winBody.prepend(displayAlert('Error completing task. ', 'error'));
                }
-           }),
-           displayButton('delete', ['gs-btn-table', 'gs-btn--danger'], async(e) => {
+           });
+           const delBtn = displayButton('delete', ['gs-btn-table', 'gs-btn--danger'], async(e) => {
                const curTask = task;
                console.log(curTask.title);
                 e.stopPropagation();
@@ -79,8 +79,9 @@ export async function displayAllTasksWindow(){
                     allTaskWin.refresh();
                     notifyStatsChanged();
                 }
-           })
-       ];
+           });
+           task['edit'] = [compBtn, delBtn];
+
     });
     const taskTable = await displayTables('all-tasks',['Title', 'Description', 'edit'],allTasks,['title', 'description','edit']);
 

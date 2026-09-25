@@ -48,6 +48,7 @@ class MainAPI:
         return {"path": self._source_file[0], "header": header}
 
     def get_canon_synonyms(self):
+
         return {
             "canon": self.rped_config["canonical_fields"],
             "synonyms": self.rped_config["synonyms"]

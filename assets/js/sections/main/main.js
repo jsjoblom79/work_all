@@ -22,7 +22,7 @@ export default function displayMainWindow(){
             let result
             switch (hiddenInput.dataset.businessLine) {
                 case "CRI":
-                    result = await window.pywebview.api.main.process_file_upload(file.name, streamData, hiddenInput.dataset.businessLine);
+                    result = await window.pywebview.api.main.process_file_upload(e.target.files[0].name, streamData, hiddenInput.dataset.businessLine);
 
                     break;
                 case "RPED":
@@ -30,7 +30,7 @@ export default function displayMainWindow(){
 
             }
             if (result.result) {
-                        panel.prepend(displayAlert(`File: ${file.name} processes. `, 'success'));
+                        panel.prepend(displayAlert(`File: ${e.target.files[0].name} processes. `, 'success'));
                     }
         }
     });

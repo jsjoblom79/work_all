@@ -41,8 +41,9 @@ export default async function displayTables(tableId, headerArray, dataArray, fil
 
         for (const key of resolveKeyOrder(data)) {
             const td = document.createElement('td');
+            console.log(key);
             if(data[key] instanceof Object){
-                td.append(data[key]);
+                //td.append(data[key]);
             } else {
                 if (key.includes('date') && data[key] != null) {
                     const [year, month, day] = data[key].substring(0, 10).split('-');
@@ -67,9 +68,11 @@ export default async function displayTables(tableId, headerArray, dataArray, fil
                         btnDiv.style.display = 'flex';
                         btnDiv.style.gap = '5px';
                         data[key].forEach(item => {
-                            btnDiv.append(item);
+                            //btnDiv.innerHTML = item.innerText;
+                            console.log(item);
+                            td.append(item);
                         });
-                        td.append(btnDiv);
+
                     } else {
                         td.append(data[key]);
                     }

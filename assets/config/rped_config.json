@@ -25,14 +25,17 @@
       "firstname",
       "given_name",
       "first",
-      "fname"
+      "fname",
+      "First Name",
+      "First_Name"
     ],
     "Last_Name": [
       "lastname",
       "surname",
       "family_name",
       "last",
-      "lname"
+      "lname",
+      "Last Name"
     ],
     "DOB": [
       "date of birth",

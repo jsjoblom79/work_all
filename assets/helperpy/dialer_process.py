@@ -101,15 +101,16 @@ class Dialer:
     def __write_files(self):
         if self.Business_line == 'CRI' or self.Business_line == 'RPED':
             text = ",".join([r.replace('RecordNumber', 'AccountNumber') for r in self.OHeader]) + '\n'
-
+            print(self.RecordArray)
             for record in self.RecordArray:
                 if 'RecordNumber' in record:
-                    record['AccountNumber'] = record.pop('RecordNumber')
-                else:
+                    record['AccountNumber'] = record['RecordNumber']
+                    del record['RecordNumber']
                     reordered_record = {key: record[key] for key in self.OHeader if key in record or key == 'RecordNumber'}
                     text += ','.join(reordered_record.values()) + '\n'
 
-            current_date = date.today().strftime('%Y%m%d')
+
+            current_date = date.today().strftime('%Y%m%d_%H%M%S')
             print(f"{self.output_folder}{self.Business_line}_{current_date}.csv")
             Path(f"{self.output_folder}{self.Business_line}_{current_date}.csv").write_text(data=text)
             # Write the Error and Archive File.
@@ -119,7 +120,7 @@ class Dialer:
     def process_file(self):
         lines = self.Data.splitlines()
         self.IHeader = lines[0].split(',')
-
+        print(self.IHeader)
         if self.IHeader:
             r = 0
             for line in lines[1:]:
@@ -132,13 +133,18 @@ class Dialer:
                     self.RecordArray.append(
                         { self.IHeader[i]: records[i] for i in range(len(self.IHeader)) }
                     )
-                    self.__prepare_for_output(self.RecordArray[r])
+                    try:
+                        self.__prepare_for_output(self.RecordArray[r])
+                        if 'ZONE' in self.RecordArray[r]:
+                            if self.RecordArray[r]['ZONE'] is None:
+                                self.ErrorArray.append({'error': records})
+                                self.RecordArray.pop(r)
+                                r -= 1
+                        r += 1
+                    except IndexError:
+                        r += 1
 
-                    if 'ZONE' in self.RecordArray[r]:
-                        if self.RecordArray[r]['ZONE'] is None:
-                            self.ErrorArray.append({ 'error': records })
-                            self.RecordArray.pop(r)
-                    r+=1
+
 
             if len(self.RecordArray) > 0:
                 for record in self.RecordArray:
@@ -158,7 +164,10 @@ class Dialer:
 
 
     def __get_timezone(self, state):
-        return TIME_ZONE[state]
+        try:
+            return TIME_ZONE[state]
+        except KeyError:
+            return None
 
     def __get_state_and_zip(self,state_and_zip):
         fields = state_and_zip.split(' ')
